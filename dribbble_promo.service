@@ -1,0 +1,14 @@
+[Unit]
+Description=Dribble Promo Bot
+After=network.target
+
+[Service]
+ExecStart=npm run start
+ExecReload=npm run start
+WorkingDirectory=/opt/dribbble_promo/
+KillMode=process
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

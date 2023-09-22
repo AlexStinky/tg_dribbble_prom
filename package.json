@@ -1,0 +1,24 @@
+{
+  "name": "dribbble_promo",
+  "version": "1.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bot"
+  },
+  "keywords": [],
+  "author": "Stinky",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "dotenv": "^10.0.0",
+    "jsdom": "^22.1.0",
+    "mongoose": "^6.4.5",
+    "node-fetch": "^2.6.1",
+    "telegraf": "^3.38.0",
+    "telegraf-calendar-telegram": "^2.0.2",
+    "telegraf-i18n": "^6.6.0",
+    "telegraf-ratelimit": "^2.0.0"
+  }
+}

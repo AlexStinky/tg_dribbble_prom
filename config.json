@@ -1,0 +1,7 @@
+{
+    "LIKE_PRICE": 1,
+    "COMMENT_PRICE": 2,
+    "SUBSCRIBE_PRICE": 3,
+    "DISCOUNT": 50,
+    "BONUS": 50
+}

@@ -1,0 +1,12 @@
+start_message: ''
+
+enterDribbbleUsername_message: 'Отправьте ссылку на ваш аккаунт либо введите юзернейм:'
+
+accountAdded_message: 'Вы добавили <a href="${url}">аккаунт</a>'
+accountNotFound_message: 'Аккаунт <a href="${url}">${username}</a> не найден'
+
+cancel_button: 'Отменить'
+back_button: 'Назад'
+next_button: 'Вперед'
+done_button: 'Готово'
+skip_button: 'Пропустить'
