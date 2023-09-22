@@ -31,7 +31,8 @@ const start = async (ctx, next) => {
                     discount: 0,
                     bonus: 0,
                     dribbble_username: '',
-                    balance: 0
+                    balance: 0,
+                    reserved: 0
                 });
             }
 
@@ -60,6 +61,26 @@ const start = async (ctx, next) => {
     return next();
 };
 
+const commands = async (ctx, next) => {
+    const { message } = ctx.update;
+
+    if (message && message.chat.type === 'private' && message.text) {
+        switch(message.text) {
+            case '/add':
+                if (ctx.state.user.balance > 0) {
+                    return await ctx.scene.enter('task');
+                } else {
+                    await ctx.replyWithHTML(ctx.i18n.t('notEnoughFound_message'));
+                }
+
+                break;
+        }
+    }
+
+    return next();
+};
+
 module.exports = {
-    start
+    start,
+    commands
 }

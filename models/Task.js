@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const TaskSchema = new Schema({
     tg_id: String,
-    dribbble_username: String,
     type: String,
     creation_date: Date,
     isActive: Boolean,
+    data: String,
     all: Number,
     completed: Number
 }, { versionKey: false });

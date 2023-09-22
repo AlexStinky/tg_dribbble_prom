@@ -5,6 +5,29 @@ enterDribbbleUsername_message: 'Отправьте ссылку на ваш ак
 accountAdded_message: 'Вы добавили <a href="${url}">аккаунт</a>'
 accountNotFound_message: 'Аккаунт <a href="${url}">${username}</a> не найден'
 
+chooseType_message: 'Выберите тип задачи:'
+enterUrl_message: 'Отправьте ссылку на страницу:'
+enterCount_message: 'Ваш баланс: ${balance} $
+
+Введите количество <b>${actions}</b> (1 ${action} = ${price} $):'
+taskIsAdded_message: 'Задача добавлена'
+
+dataIsntCorrect_message: 'Вы ввели некорректные данные'
+notEnoughFound_message: 'На вашем балансе недостаточно средств'
+
+balanceReplenished_message: 'Вы пополнили баланс <a href="tg://user?id=${id}">${username}</a> на ${credits} (всего: ${balance})'
+
+like_action: 'лайк'
+likes_action: 'лайков'
+comment_action: 'комментарий'
+comments_action: 'комментариев'
+subscriber_action: 'подписчик'
+subscribers_action: 'подписчиков'
+
+like_button: 'Лайк'
+comment_button: 'Комментарий'
+subscribe_button: 'Подписка'
+
 cancel_button: 'Отменить'
 back_button: 'Назад'
 next_button: 'Вперед'
