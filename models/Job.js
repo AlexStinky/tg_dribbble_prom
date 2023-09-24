@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const CompletedSchema = new Schema({
+const JobSchema = new Schema({
     task_id: String,
     tg_id: String,
+    dribbble_username: String,
     date: Date,
+    isComplited: Boolean,
+    status: String,
     reward: Number
 }, { versionKey: false });
 
-const Completed = mongoose.model('Completed', CompletedSchema);
+const Job = mongoose.model('Job', JobSchema);
 
 module.exports = {
-    Completed
+    Job
 }

@@ -11,11 +11,13 @@ const TelegrafI18n = require('telegraf-i18n/lib/i18n');
 const rateLimit = require('telegraf-ratelimit');
 
 const middlewares = require('./scripts/middlewares');
+const helper = require('./scripts/helper');
+const messages = require('./scripts/messages');
 
 const { dribbbleService } = require('./services/dribbble');
 
 const profile = require('./scenes/profile');
-const { userService } = require('./services/db');
+const { userService, taskService } = require('./services/db');
 
 const stage = new Stage([
     profile.addUsername(),
@@ -68,7 +70,27 @@ bot.command('update', async (ctx) => {
             reserved: 0
         });
 
+        for (let i = 0; i < 21; i++) {
+            await taskService.create({
+                tg_id: ctx.from.id,
+                type: 'like',
+                creation_date: new Date(),
+                isActive: true,
+                data: '19510861',
+                all: 10,
+                completed: 0
+            });
+        }
+
         await ctx.replyWithHTML(res);
+    }
+});
+
+bot.command('db', async (ctx) => {
+    if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
+        const res = await taskService.getAll({});
+
+        console.log(res);
     }
 });
 
@@ -77,7 +99,7 @@ bot.hears(/following ([A-Za-z0-9]+) ([A-Za-z0-9]+)/, async (ctx) => {
         const where = ctx.match[1];
         const whom = ctx.match[2];
 
-        const res = await dribbbleService.checkComment(where, whom);
+        const res = await dribbbleService.checkFollowing(where, whom);
 
         console.log(res)
     }
@@ -113,6 +135,51 @@ bot.hears(/upbalance ([A-Za-z0-9]+) ([0-9]+)/, async (ctx) => {
 bot.action('cancel', async (ctx) => {
     await ctx.deleteMessage();
     await ctx.scene.leave();
+});
+
+bot.action([
+    /nextTask-([0-9]+)/,
+    /doneTask-([0-9]+)-([0-9A-Za-z]+)/
+], async (ctx) => {
+    let index = parseInt(ctx.match[1]);
+
+    if (ctx.match[0].includes('doneTask')) {
+        const id = ctx.match[2];
+        const task = await taskService.get({ _id: id });
+
+        ctx.session.tasks = ctx.session.tasks.filter((el) => el._id != id);
+        index = index - 2;
+    }
+
+    if (!ctx.session.tasks_skip) {
+        ctx.session.tasks_skip = 0;
+    } else if (index < 0 && ctx.session.tasks_skip > 1) {
+        ctx.session.tasks_skip--;
+
+        index = middlewares.TASKS_LIMIT - 1;
+    }
+    
+    if (index >= middlewares.TASKS_LIMIT) {
+        const skip = ctx.session.tasks_skip * middlewares.TASKS_LIMIT;
+        ctx.session.tasks = await helper.tasks(ctx, skip, middlewares.TASKS_LIMIT);
+
+        index = 0;
+    }
+
+    let task = ctx.session.tasks[index];
+
+    if (!task || ctx.session.tasks.length === 0) {
+        ctx.session.tasks_skip = 0;
+        ctx.session.tasks = await helper.tasks(ctx, ctx.session.tasks_skip, middlewares.TASKS_LIMIT);
+
+        task = ctx.session.tasks[0];
+        index = 0;
+    }
+
+    const message = messages.task(ctx.state.user.locale, task, index, ctx.session.tasks_skip);
+
+    await ctx.deleteMessage();
+    await ctx.replyWithHTML(message.text, message.extra);
 });
 
 bot.launch();

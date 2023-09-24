@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { User } = require('../models/User');
 const { Task } = require('../models/Task');
-const { Completed } = require('../models/Completed');
+const { Job } = require('../models/Job');
 
 const DB_CONN = process.env.DB_CONN;
 
@@ -20,12 +20,15 @@ class DBMethods {
         return await this.Model.create(data);
     };
 
-    async get (req) {
-        return await this.Model.findOne(req);
+    async get (req, sort = null) {
+        return (sort) ?
+            await this.Model.findOne(req).sort(sort) : await this.Model.findOne(req);
     };
 
-    async getAll (req) {
-        return await this.Model.find(req);
+    async getAll (req, sort = null, skip = 0, limit = 0) {
+        return (sort) ?
+            await this.Model.find(req).sort(sort).skip(skip).limit(limit) :
+            await this.Model.find(req);
     };
 
     async update (req, update, returnDoc = 'before') {
@@ -53,10 +56,10 @@ class DBMethods {
 
 const userService = new DBMethods(User);
 const taskService = new DBMethods(Task);
-const completedService = new DBMethods(Completed);
+const jobService = new DBMethods(Job);
 
 module.exports = {
     userService,
     taskService,
-    completedService
+    jobService
 }

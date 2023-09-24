@@ -18,7 +18,7 @@ class Dribbble {
         this.URL = process.env.DRIBBBLE_URL;
         this.FOLLOWING = '/following';
         this.LIKES = '/likes';
-        this.SHOTS = '/shots/';
+        this.SHOTS = 'shots/';
         this.COMMENTS = '/comments?page=1&sort=recent&format=json';
     }
 

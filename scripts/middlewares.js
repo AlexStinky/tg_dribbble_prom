@@ -1,8 +1,13 @@
+const helper = require('./helper');
+const messages = require('./messages');
+
 const {
     userService
 } = require('../services/db');
 
 const LANGUAGES = /ru/;
+
+const TASKS_LIMIT = 10;
 
 const start = async (ctx, next) => {
     const { message } = ctx.update;
@@ -63,6 +68,13 @@ const start = async (ctx, next) => {
 
 const commands = async (ctx, next) => {
     const { message } = ctx.update;
+    const {
+        user
+    } = ctx.state;
+
+    let response_message = null;
+
+    ctx.state.user = await userService.get({ tg_id: ctx.from.id });
 
     if (message && message.chat.type === 'private' && message.text) {
         switch(message.text) {
@@ -74,6 +86,16 @@ const commands = async (ctx, next) => {
                 }
 
                 break;
+            case '/tasks':
+                ctx.session.tasks_skip = 0;
+                ctx.session.tasks = await helper.tasks(ctx, ctx.session.tasks_skip, TASKS_LIMIT);
+
+                const index = 0;
+                const task = ctx.session.tasks[index];
+
+                response_message = messages.task(user.locale, task, index, ctx.session.tasks_skip);
+
+                return await ctx.replyWithHTML(response_message.text, response_message.extra);
         }
     }
 
@@ -81,6 +103,7 @@ const commands = async (ctx, next) => {
 };
 
 module.exports = {
+    TASKS_LIMIT,
     start,
     commands
 }

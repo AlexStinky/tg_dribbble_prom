@@ -137,8 +137,6 @@ function addNewTask() {
                 } else {
                     temp = text.replace(DRIBBBLE_URL_REG, '');
 
-                    console.log(temp)
-
                     check = await dribbbleService.getUser(temp);
                 }
 
@@ -175,8 +173,6 @@ function addNewTask() {
             if (ctx.scene.state.data.data && ctx.scene.state.data.all) {
                 const { user } = ctx.state;
                 const { data } = ctx.scene.state;
-
-                console.log(user, data)
 
                 await userService.update({ tg_id: ctx.from.id }, {
                     balance: user.balance - data.all,
