@@ -7,10 +7,16 @@ const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
 
+const { jobService, userService, taskService } = require('./db');
+
+const { Queue } = require('../modules/queue');
+
 const FOLLOWING_REG = /(\/teams\/|\/)/g;
 
-class Dribbble {
+class Dribbble extends Queue {
     constructor() {
+        super();
+
         this.parser = axios;
         this.browser = {};
         this.cookies = '';
@@ -49,6 +55,83 @@ class Dribbble {
         const CONFIG = JSON.parse(fs.readFileSync('./config.json'));
 
         this.cookies = CONFIG.COOKIES;
+
+        for (let i = this._oldestIndex; i < this._newestIndex; i++) {
+            const data = this._storage[i];
+
+            await this.job(data);
+
+            this.dequeue();
+        }
+
+        setTimeout(() => this.run(), 1000);
+    }
+
+    async job(data) {
+        const task = await taskService.get({ _id: data.task_id });
+
+        let res = null;
+
+        switch(task.type) {
+            case 'like':
+                res = await this.checkLike(data.dribbble_username, task.data);
+
+                break;
+            case 'comment':
+                res = await this.checkComment(data.dribbble_username, task.data);
+
+                break;
+            case 'following':
+                res = await this.checkFollowing(data.dribbble_username, task.data);
+
+                break;
+        }
+
+        if (res.success) {
+            if (task && task.isActive) {
+                task.completed++;
+
+                if (task.completed >= task.all) {
+                    task.isActive = false;
+                }
+
+                await taskService.update({ _id: task._id }, task);
+
+                await jobService.update({ task_id: task._id }, {
+                    isComplited: true,
+                    status: 'success',
+                });
+
+                // update balance for executor
+                await userService.update({ tg_id: data.tg_id }, {
+                    $inc: {
+                        balance: task.price
+                    }
+                });
+
+                // update reserved for customer
+                await userService.update({ tg_id: task.tg_id }, {
+                    $inc: {
+                        reserved: 0 - task.price
+                    }
+                });
+
+                return {
+                    success: true,
+                    response: 'OK'
+                };
+            }
+        }
+
+        await jobService.update({ task_id: task._id }, {
+            isComplited: true,
+            status: 'failed'
+        });
+
+        return {
+            success: false,
+            response: res
+        };
     }
 
     async getUser(username) {
@@ -108,14 +191,14 @@ class Dribbble {
                     const username = (temp.getAttribute('href')).replace(FOLLOWING_REG, '');
 
                     if (username == whom) {
-                        return el;
+                        return temp;
                     }
                 }
             });
 
             return {
                 success: (check) ? true : false,
-                response: data
+                response: (check) ? (check.getAttribute('href')).replace(FOLLOWING_REG, '') : check
             };
         } else {
             return {
@@ -125,7 +208,7 @@ class Dribbble {
         }
     }
 
-    async checkLikes(username, id) {
+    async checkLike(username, id) {
         const { data } = await this.parser({
             method: 'get',
             url: this.URL + username + this.LIKES,
@@ -147,7 +230,7 @@ class Dribbble {
 
             return {
                 success: (check) ? true : false,
-                response: data
+                response: (check) ? check.getAttribute('data-thumbnail-id') : check
             };
         } else {
             return {

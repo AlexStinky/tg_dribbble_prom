@@ -10,7 +10,7 @@ const LANGUAGES = /ru/;
 const TASKS_LIMIT = 10;
 
 const start = async (ctx, next) => {
-    const { message } = ctx.update;
+    const { message } = ctx.update.callback_query || ctx.update;
 
     if (message && message.chat.type == 'private') {
         try {
@@ -74,10 +74,10 @@ const commands = async (ctx, next) => {
 
     let response_message = null;
 
-    ctx.state.user = await userService.get({ tg_id: ctx.from.id });
-
     if (message && message.chat.type === 'private' && message.text) {
         switch(message.text) {
+            case '/changeAccount':
+                return await ctx.scene.enter('username');
             case '/add':
                 if (ctx.state.user.balance > 0) {
                     return await ctx.scene.enter('task');
@@ -87,13 +87,13 @@ const commands = async (ctx, next) => {
 
                 break;
             case '/tasks':
-                ctx.session.tasks_skip = 0;
-                ctx.session.tasks = await helper.tasks(ctx, ctx.session.tasks_skip, TASKS_LIMIT);
+                ctx.session.tasks_skip = 1;
+                ctx.session.tasks = await helper.tasks(ctx, 0, TASKS_LIMIT);
 
                 const index = 0;
                 const task = ctx.session.tasks[index];
 
-                response_message = messages.task(user.locale, task, index, ctx.session.tasks_skip);
+                response_message = messages.taskMessage(user.locale, task, index, ctx.session.tasks_skip);
 
                 return await ctx.replyWithHTML(response_message.text, response_message.extra);
         }

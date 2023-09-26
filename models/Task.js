@@ -8,7 +8,8 @@ const TaskSchema = new Schema({
     isActive: Boolean,
     data: String,
     all: Number,
-    completed: Number
+    completed: Number,
+    price: Number
 }, { versionKey: false });
 
 const Task = mongoose.model('Task', TaskSchema);

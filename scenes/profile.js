@@ -12,7 +12,7 @@ const { dribbbleService } = require('../services/dribbble');
 
 const DRIBBBLE_URL = 'https://dribbble.com/';
 
-const DRIBBBLE_URL_REG = /((https|http)(:\/\/dribbble.com\/))/g;
+const DRIBBBLE_URL_REG = /((https|http)(:\/\/dribbble.com\/)|(\/))/g;
 
 function addUsername() {
     const username = new Scene('username');
@@ -63,12 +63,14 @@ function addNewTask() {
 
         ctx.scene.state.data = {
             tg_id: ctx.from.id,
+            dribbble_username: ctx.state.user.dribbble_username,
             type: null,
             creation_date: now,
             isActive: true,
             data: null,
             all: 0,
-            completed: 0
+            completed: 0,
+            price: 0
         };
 
         await ctx.replyWithHTML(ctx.i18n.t('chooseType_message'), {
@@ -76,14 +78,14 @@ function addNewTask() {
                 inline_keyboard: [
                     [{ text: ctx.i18n.t('like_button'), callback_data: 'type-like' }],
                     [{ text: ctx.i18n.t('comment_button'), callback_data: 'type-comment' }],
-                    [{ text: ctx.i18n.t('subscribe_button'), callback_data: 'type-subscribe' }],
+                    [{ text: ctx.i18n.t('following_button'), callback_data: 'type-following' }],
                     [{ text: ctx.i18n.t('cancel_button'), callback_data: 'cancel' }]
                 ]
             }
         });
     });
 
-    task.action(/type-([like|comment|subscribe]+)/, async (ctx) => {
+    task.action(/type-([like|comment|following]+)/, async (ctx) => {
         const type = ctx.match[1];
 
         ctx.scene.state.data.type = type;
@@ -145,17 +147,19 @@ function addNewTask() {
                     const ACTIONS = {
                         'like': [ctx.i18n.t('like_action'), ctx.i18n.t('likes_action'), 'LIKE_PRICE'],
                         'comment': [ctx.i18n.t('comment_action'), ctx.i18n.t('comments_action'), 'COMMENT_PRICE'],
-                        'subscribe': [ctx.i18n.t('subscriber_action'), ctx.i18n.t('subscribers_action'), 'SUBSCRIBE_PRICE']
+                        'following': [ctx.i18n.t('follower_action'), ctx.i18n.t('followers_action'), 'FOLLOWING_PRICE']
                     };
+                    const price = CONFIG[ACTIONS[data.type][2]];
 
                     message.text = ctx.i18n.t('enterCount_message', {
                         action: ACTIONS[data.type][0],
                         actions: ACTIONS[data.type][1],
-                        price: CONFIG[ACTIONS[data.type][2]],
+                        price,
                         balance: ctx.state.user.balance
                     });
 
                     ctx.scene.state.data.data = temp;
+                    ctx.scene.state.data.price = price;
                 }
             } else if (Number(text)) {
                 if (ctx.state.user.balance >= text) {

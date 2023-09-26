@@ -17,7 +17,7 @@ const messages = require('./scripts/messages');
 const { dribbbleService } = require('./services/dribbble');
 
 const profile = require('./scenes/profile');
-const { userService, taskService } = require('./services/db');
+const { userService, taskService, jobService } = require('./services/db');
 
 const stage = new Stage([
     profile.addUsername(),
@@ -67,7 +67,8 @@ bot.catch(err => console.error(err));
 bot.command('update', async (ctx) => {
     if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
         const res = await userService.updateAll({}, {
-            reserved: 0
+            reserved: 0,
+            balance: 0
         });
 
         for (let i = 0; i < 21; i++) {
@@ -78,7 +79,8 @@ bot.command('update', async (ctx) => {
                 isActive: true,
                 data: '19510861',
                 all: 10,
-                completed: 0
+                completed: 0,
+                price: 1 + i
             });
         }
 
@@ -88,9 +90,18 @@ bot.command('update', async (ctx) => {
 
 bot.command('db', async (ctx) => {
     if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
-        const res = await taskService.getAll({});
+        const res = await userService.getAll({});
 
         console.log(res);
+    }
+});
+
+bot.command('del', async (ctx) => {
+    if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
+        const res = await taskService.deleteAll({});
+        await jobService.deleteAll({});
+
+        await ctx.replyWithHTML(res);
     }
 });
 
@@ -138,7 +149,7 @@ bot.action('cancel', async (ctx) => {
 });
 
 bot.action([
-    /nextTask-([0-9]+)/,
+    /nextTask-([-0-9]+)/,
     /doneTask-([0-9]+)-([0-9A-Za-z]+)/
 ], async (ctx) => {
     let index = parseInt(ctx.match[1]);
@@ -147,42 +158,69 @@ bot.action([
         const id = ctx.match[2];
         const task = await taskService.get({ _id: id });
 
-        ctx.session.tasks = ctx.session.tasks.filter((el) => el._id != id);
-        index = index - 2;
+        if (task) {
+            await jobService.create({
+                task_id: task._id,
+                tg_id: ctx.from.id,
+                dribbble_username: ctx.state.user.dribbble_username,
+                date: new Date(),
+                isComplited: false,
+                status: 'in processing',
+                reward: task.price
+            });
+
+            dribbbleService.enqueue({
+                task_id: task._id,
+                tg_id: ctx.from.id,
+                dribbble_username: ctx.state.user.dribbble_username,
+            });
+
+            ctx.session.tasks = (ctx.session.tasks) ?
+                ctx.session.tasks.filter((el) => el._id != id) : null;
+        }
     }
 
-    if (!ctx.session.tasks_skip) {
+    if (!ctx.session.tasks_skip || !ctx.session.tasks) {
         ctx.session.tasks_skip = 0;
-    } else if (index < 0 && ctx.session.tasks_skip > 1) {
-        ctx.session.tasks_skip--;
+    }
 
-        index = middlewares.TASKS_LIMIT - 1;
+    if (index < 0 && ctx.session.tasks_skip > 0) {
+        ctx.session.tasks_skip -= 2;
     }
     
-    if (index >= middlewares.TASKS_LIMIT) {
+    if (!ctx.session.tasks ||
+        index >= ctx.session.tasks.length ||
+        index < 0) {
         const skip = ctx.session.tasks_skip * middlewares.TASKS_LIMIT;
+
+        ctx.session.tasks_skip++;
         ctx.session.tasks = await helper.tasks(ctx, skip, middlewares.TASKS_LIMIT);
 
-        index = 0;
+        index = (index < 0) ? ctx.session.tasks.length - 1 : 0;
     }
 
-    let task = ctx.session.tasks[index];
-
-    if (!task || ctx.session.tasks.length === 0) {
-        ctx.session.tasks_skip = 0;
-        ctx.session.tasks = await helper.tasks(ctx, ctx.session.tasks_skip, middlewares.TASKS_LIMIT);
-
-        task = ctx.session.tasks[0];
-        index = 0;
-    }
-
-    const message = messages.task(ctx.state.user.locale, task, index, ctx.session.tasks_skip);
+    const task = (ctx.session.tasks.length > 0) ? ctx.session.tasks[index] : null;
+    const message = messages.taskMessage(ctx.state.user.locale, task, index, ctx.session.tasks_skip);
 
     await ctx.deleteMessage();
     await ctx.replyWithHTML(message.text, message.extra);
 });
 
 bot.launch();
+
+(async () => {
+    const jobs = await jobService.getAll({
+        isComplited: false
+    }, { date: 1 });
+
+    for (let i = 0; i < jobs.length; i++) {
+        dribbbleService.enqueue({
+            task_id: jobs[i].task_id,
+            tg_id: jobs[i].tg_id,
+            dribbble_username: jobs[i].dribbble_username
+        });
+    }
+})();
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

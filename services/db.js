@@ -26,9 +26,11 @@ class DBMethods {
     };
 
     async getAll (req, sort = null, skip = 0, limit = 0) {
-        return (sort) ?
+        return (sort && limit > 0) ?
             await this.Model.find(req).sort(sort).skip(skip).limit(limit) :
-            await this.Model.find(req);
+            (sort) ?
+                await this.Model.find(req).sort(sort) :
+                await this.Model.find(req);
     };
 
     async update (req, update, returnDoc = 'before') {

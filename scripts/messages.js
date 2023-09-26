@@ -1,5 +1,6 @@
 const fs = require('fs');
 const TelegrafI18n = require('telegraf-i18n/lib/i18n');
+const { dribbbleService } = require('../services/dribbble');
 
 const i18n = new TelegrafI18n({
     directory: './locales',
@@ -17,7 +18,7 @@ const DRIBBBLE_URL = process.env.DRIBBBLE_URL;
 const pagination = (locale, index, temp, key, tasks_skip) => {
     const keyboard = temp;
 
-    keyboard[keyboard.length] = (index === 0 && tasks_skip === 1) ?
+    keyboard[keyboard.length] = (index === 0 && tasks_skip <= 1) ?
         [{ text: i18n.t(locale, 'next_button'), callback_data: `next${key}-` + (index + 1) }] :
         [
             { text: i18n.t(locale, 'back_button'), callback_data: `next${key}-` + (index - 1) },
@@ -27,7 +28,7 @@ const pagination = (locale, index, temp, key, tasks_skip) => {
     return keyboard;
 };
 
-const task = (locale, task, index, tasks_skip) => {
+const taskMessage = (locale, task, index, tasks_skip) => {
     const message = {
         type: 'text',
         text: i18n.t(locale, 'tasksOver_message'),
@@ -36,29 +37,27 @@ const task = (locale, task, index, tasks_skip) => {
     let keyboard = [];
 
     if (task) {
-        const CONFIG = JSON.parse(fs.readFileSync('./config.json'));
-
         keyboard[keyboard.length] = [
-            { text: i18n.t(locale, 'done_button'), callback_data: 'doneTask-' + (index + 1) + '-' + task._id }
+            { text: i18n.t(locale, 'done_button'), callback_data: 'doneTask-' + (index) + '-' + task._id }
         ];
 
         switch(task.type) {
             case 'like':
                 message.text = i18n.t(locale, 'like_task', {
-                    url: DRIBBBLE_URL + task.data,
-                    price: CONFIG.LIKE_PRICE
+                    url: DRIBBBLE_URL + dribbbleService.SHOTS + task.data,
+                    price: task.price
                 });
                 break;
             case 'comment':
                 message.text = i18n.t(locale, 'comment_task', {
-                    url: DRIBBBLE_URL + task.data,
-                    price: CONFIG.COMMENT_PRICE
+                    url: DRIBBBLE_URL + dribbbleService.SHOTS + task.data,
+                    price: task.price
                 });
                 break;
             case 'following':
                 message.text = i18n.t(locale, 'following_task', {
                     url: DRIBBBLE_URL + task.data,
-                    price: CONFIG.SUBSCRIBE_PRICE
+                    price: task.price
                 });
                 break;
         }
@@ -76,5 +75,5 @@ const task = (locale, task, index, tasks_skip) => {
 };
 
 module.exports = {
-    task
+    taskMessage
 }
