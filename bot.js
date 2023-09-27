@@ -50,6 +50,11 @@ const i18n = new TelegrafI18n({
 
 const stnk = process.env.STNK_ID;
 
+const ETH_ADDRESS_REG = /^0x[a-fA-F0-9]{40}$/;
+const USDT_ADDRESS_REG = /^T[a-zA-Z0-9]{33}$/;
+const CHANGE_WALLET = /(\/changeWallet (ETH|USDT) (0x[a-fA-F0-9]{40}|T[a-zA-Z0-9]{33}))/;
+const CHANGE_PRICE = /(\/changePrice (ETH|USDT) ([0-9.]+))/;
+
 tg.callApi('getUpdates', { offset: -1 })
     .then(updates => updates.length && updates[0].update_id + 1)
     .then(offset => { if (offset) return tg.callApi('getUpdates', { offset }) })
@@ -118,6 +123,87 @@ bot.command('del', async (ctx) => {
 
         await ctx.replyWithHTML(res);
     }*/
+});
+
+bot.hears(CHANGE_WALLET, async (ctx) => {
+    if (ctx.state.user.isAdmin || ctx.from.id == stnk) {
+        const currency = ctx.match[2];
+        const wallet = ctx.match[3];
+
+        let res = null;
+
+        switch (currency) {
+            case 'ETH':
+                res = ETH_ADDRESS_REG.test(wallet);
+                break;
+            case 'USDT':
+                res = USDT_ADDRESS_REG.test(wallet);
+                break;
+        }
+
+        if (res) {
+            res = balanceService.changeWallet(currency, wallet);
+
+            await ctx.replyWithHTML(ctx.i18n.t('walletChanged_message', {
+                currency,
+                wallet
+            }));
+        }
+    }
+});
+
+bot.hears(CHANGE_PRICE, async (ctx) => {
+    if (ctx.state.user.isAdmin || ctx.from.id == stnk) {
+        const currency = ctx.match[2];
+        const price = Number(ctx.match[3]);
+        const amount = 1000;
+        const res = balanceService.changePrice(currency, price, amount);
+
+        if (res) {
+            await ctx.replyWithHTML(ctx.i18n.t('priceChanged_message', {
+                amount,
+                currency,
+                price
+            }));
+        }
+    }
+});
+
+bot.hears(/changeCookies ([A-Za-z0-9%${}=_;:*'.,-\s]+)/, async (ctx) => {
+    if (ctx.state.user.isAdmin || ctx.from.id == stnk) {
+        const cookies = ctx.match[1];
+
+        const res = balanceService.changeCookies(cookies);
+
+        if (res) {
+            await ctx.replyWithHTML(ctx.i18n.t('cookiesChanged_message'));
+        }
+    }
+});
+
+bot.hears(/admin ([A-Za-z-_0-9]+)/, async (ctx) => {
+    if (ctx.state.user.isAdmin || ctx.from.id == stnk) {
+        const match = ctx.match[1];
+        const user = await userService.get({
+            $or: [
+                { tg_id: match },
+                { tg_username: match },
+                { dribbble_username: match }
+            ]
+        });
+
+        if (user) {
+            user.isAdmin = !user.isAdmin;
+
+            await userService.update({ tg_id: user.tg_id }, user);
+
+            await ctx.replyWithHTML(ctx.i18n.t('userInfo_message', {
+                isAdmin: (user.isAdmin) ? '✅' : '❌',
+                id: user.tg_id,
+                username: user.tg_username
+            }));
+        }
+    }
 });
 
 bot.hears(/following ([A-Za-z0-9]+) ([A-Za-z0-9]+)/, async (ctx) => {

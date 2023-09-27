@@ -34,6 +34,30 @@ class Balance extends Queue {
         this.web3 = new Web3(this.WEB3_URL);
     }
 
+    changeWallet(currency, wallet) {
+        this.CONFIG[`${currency}_WALLET_ADDRESS`] = wallet;
+
+        fs.writeFileSync('./config.json', JSON.stringify(this.CONFIG));
+
+        return this.CONFIG;
+    }
+
+    changePrice(currency, price, amount) {
+        this.CONFIG['PRICES'][currency][`${amount}`] = price;
+
+        fs.writeFileSync('./config.json', JSON.stringify(this.CONFIG));
+
+        return this.CONFIG;
+    }
+
+    changeCookies(cookies) {
+        this.CONFIG['COOKIES'] = cookies;
+
+        fs.writeFileSync('./config.json', JSON.stringify(this.CONFIG));
+
+        return this.CONFIG;
+    }
+
     async run() {
         for (let i = this._oldestIndex; i < this._newestIndex; i++) {
             const data = this._storage[i];

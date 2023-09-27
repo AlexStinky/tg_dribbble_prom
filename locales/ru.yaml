@@ -55,6 +55,14 @@ txIsntCorrect_message: 'Вы ввели некорректний хеш тран
 paymentIsSuccessful_message: 'Ваш счет пополнен на <b>${balance}</b> 🥨'
 paymentIsFailed_message: 'Не удалось пополнить счет'
 
+userInfo_message: '<a href="tg://user?id=${id}">${username}</a>
+
+Админ: ${isAdmin}'
+
+walletChanged_message: 'Вы изменили кошелек ${currency}: <code>${wallet}</code>'
+priceChanged_message: 'Вы изменили цену за ${amount} 🥨 на <b>${price} ${currency}</b>'
+cookiesChanged_message: 'Куки изменены'
+
 like_action: 'лайк'
 likes_action: 'лайков'
 comment_action: 'комментарий'
