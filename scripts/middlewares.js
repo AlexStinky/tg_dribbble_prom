@@ -78,6 +78,22 @@ const commands = async (ctx, next) => {
         switch(message.text) {
             case '/changeAccount':
                 return await ctx.scene.enter('username');
+            case '/balance':
+                const {
+                    balance,
+                    reserved
+                } = ctx.state.user;
+    
+                return await ctx.replyWithHTML(ctx.i18n.t('balance_message', {
+                    balance,
+                    reserved
+                }), {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: ctx.i18n.t('topUpBalance_button'), callback_data: 'topUpBalance' }]
+                        ]
+                    }
+                });
             case '/add':
                 if (ctx.state.user.balance > 0) {
                     return await ctx.scene.enter('task');

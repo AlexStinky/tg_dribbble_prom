@@ -14,14 +14,17 @@ const middlewares = require('./scripts/middlewares');
 const helper = require('./scripts/helper');
 const messages = require('./scripts/messages');
 
+const { userService, taskService, jobService, paymentService } = require('./services/db');
 const { dribbbleService } = require('./services/dribbble');
+const { balanceService } = require('./services/balance');
+const { sender } = require('./services/sender');
 
 const profile = require('./scenes/profile');
-const { userService, taskService, jobService } = require('./services/db');
 
 const stage = new Stage([
     profile.addUsername(),
-    profile.addNewTask()
+    profile.addNewTask(),
+    profile.topUpBalance(),
 ]);
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 100 });
@@ -96,6 +99,18 @@ bot.command('db', async (ctx) => {
     }
 });
 
+bot.command('test', async (ctx) => {
+    if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
+        const res = await balanceService.check({
+            hash: '6cce7799066c22b4b40792f3edd2d9ca72ef4a873912d72f059cb87aa7e8d8dc',
+            to: 'TPcsmsWYnw11xa3kQXgoSwPUkFS3iUWZwe',
+            value: '297.737585'
+        });
+
+        console.log(res)
+    }
+});
+
 bot.command('del', async (ctx) => {
     /*if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
         const res = await taskService.deleteAll({});
@@ -146,6 +161,11 @@ bot.hears(/upbalance ([A-Za-z0-9]+) ([0-9]+)/, async (ctx) => {
 bot.action('cancel', async (ctx) => {
     await ctx.deleteMessage();
     await ctx.scene.leave();
+});
+
+bot.action('topUpBalance', async (ctx) => {
+    await ctx.deleteMessage();
+    await ctx.scene.enter('balance');
 });
 
 bot.action([
@@ -208,18 +228,20 @@ bot.action([
 
 bot.launch();
 
+sender.create(bot);
+
 (async () => {
+    const payments = await paymentService.getAll({ isChecked: false });
     const jobs = await jobService.getAll({
         isComplited: false
     }, { date: 1 });
 
-    for (let i = 0; i < jobs.length; i++) {
-        dribbbleService.enqueue({
-            task_id: jobs[i].task_id,
-            tg_id: jobs[i].tg_id,
-            dribbble_username: jobs[i].dribbble_username
-        });
-    }
+    payments.forEach((el) => balanceService.enqueue(el));
+    jobs.forEach((el) => dribbbleService.enqueue({
+        task_id: el.task_id,
+        tg_id: el.tg_id,
+        dribbble_username: el.dribbble_username
+    }));
 })();
 
 process.once('SIGINT', () => bot.stop('SIGINT'));

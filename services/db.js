@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { User } = require('../models/User');
 const { Task } = require('../models/Task');
 const { Job } = require('../models/Job');
+const { Payment } = require('../models/Payment');
 
 const DB_CONN = process.env.DB_CONN;
 
@@ -59,9 +60,11 @@ class DBMethods {
 const userService = new DBMethods(User);
 const taskService = new DBMethods(Task);
 const jobService = new DBMethods(Job);
+const paymentService = new DBMethods(Payment);
 
 module.exports = {
     userService,
     taskService,
-    jobService
+    jobService,
+    paymentService
 }

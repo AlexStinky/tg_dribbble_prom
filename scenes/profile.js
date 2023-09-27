@@ -6,13 +6,18 @@ const middlewares = require('../scripts/middlewares');
 
 const {
     userService,
-    taskService
+    taskService,
+    paymentService
 } = require('../services/db');
 const { dribbbleService } = require('../services/dribbble');
+const { balanceService } = require('../services/balance');
 
 const DRIBBBLE_URL = 'https://dribbble.com/';
 
 const DRIBBBLE_URL_REG = /((https|http)(:\/\/dribbble.com\/)|(\/))/g;
+const TX_HASH_REG = /(0x[0-9a-fA-F]{64})|([0-9A-Fa-f]{64})/;
+const ETH_TX_REG = /(0x[0-9a-fA-F]{64})/;
+const USDT_TX_REG = /([0-9A-Fa-f]{64})/;
 
 function addUsername() {
     const username = new Scene('username');
@@ -192,7 +197,126 @@ function addNewTask() {
     return task;
 }
 
+function topUpBalance() {
+    const balance = new Scene('balance');
+
+    balance.enter(async (ctx) => {
+        ctx.scene.state.data = {
+            isSuccessful: false,
+            isChecked: false,
+            date: new Date(),
+            tg_id: ctx.from.id,
+            method: null,
+            amount: 0,
+            value: 0,
+            to: null,
+            hash: null
+        };
+
+        await ctx.replyWithHTML(ctx.i18n.t('choosePaymentMethod_message'), {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: ctx.i18n.t('USDT_button'), callback_data: 'method-USDT' }],
+                    [{ text: ctx.i18n.t('ETH_button'), callback_data: 'method-ETH' }],
+                    [{ text: ctx.i18n.t('cancel_button'), callback_data: 'cancel' }]
+                ]
+            }
+        });
+    });
+
+    balance.action(/method-([USDT|ETH]+)/, async (ctx) => {
+        const CONFIG = JSON.parse(fs.readFileSync('./config.json'));
+        const method = ctx.match[1];
+
+        ctx.scene.state.config = CONFIG;
+        ctx.scene.state.data.method = method;
+
+        await ctx.deleteMessage();
+        await ctx.replyWithHTML(ctx.i18n.t('enterAmount_message', {
+            price: CONFIG.PRICES[method]['1000'],
+            method
+        }), {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: ctx.i18n.t('cancel_button'), callback_data: 'cancel' }]
+                ]
+            }
+        });
+    });
+
+    balance.hears(TX_HASH_REG, async (ctx) => {
+        const {
+            method,
+            amount,
+        } = ctx.scene.state.data;
+        const hash = ctx.message.text;
+        const message = {
+            type: 'text',
+            text: ctx.i18n.t('txAccepted_message'),
+            extra: {}
+        };
+
+        let check = null;
+
+        switch(method) {
+            case 'ETH':
+                check = ETH_TX_REG.test(hash);
+
+                break;
+            case 'USDT':
+                check = USDT_TX_REG.test(hash);
+
+                break;
+        }
+
+        if (check && amount > 0) {
+            check = await paymentService.get({ hash });
+
+            if (!check) {
+                ctx.scene.state.data.hash = hash;
+
+                await paymentService.create(ctx.scene.state.data);
+
+                balanceService.enqueue(ctx.scene.state.data);
+
+                await ctx.replyWithHTML(message.text, message.extra);
+                return await ctx.scene.leave();
+            } else {
+                message.text = ctx.i18n.t('txAlreadyUse_message');
+            }
+        } else {
+            message.text = ctx.i18n.t('txIsntCorrect_message');
+        }
+
+        await ctx.replyWithHTML(message.text, message.extra);
+    });
+
+    balance.hears(/([0-9]{4,10})/, async (ctx) => {
+        const {
+            method
+        } = ctx.scene.state.data;
+
+        ctx.scene.state.data.amount = parseInt(ctx.message.text);
+
+        if (method) {
+            const CONFIG = ctx.scene.state.config;
+
+            ctx.scene.state.data.value = (((CONFIG.PRICES[method]['1000']) * ctx.scene.state.data.amount) / 1000).toString();
+            ctx.scene.state.data.to = CONFIG[`${method}_WALLET_ADDRESS`];
+
+            await ctx.replyWithHTML(ctx.i18n.t('enterHash_message', {
+                method,
+                price: ctx.scene.state.data.value,
+                address: ctx.scene.state.data.to
+            }));
+        }
+    });
+
+    return balance;
+}
+
 module.exports = {
     addUsername,
-    addNewTask
+    addNewTask,
+    topUpBalance
 }

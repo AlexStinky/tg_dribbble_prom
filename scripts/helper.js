@@ -2,7 +2,10 @@ const { taskService, jobService } = require('../services/db');
 
 const tasks = async (ctx, skip, limit) => {
     const jobs = (await jobService.getAll({
-        tg_id: ctx.from.id
+        $or: [
+            { tg_id: ctx.from.id },
+            { dribbble_username: ctx.state.user.dribbble_username }
+        ]
     })).map(el => el.task_id);
 
     const data = await taskService.getAll({
