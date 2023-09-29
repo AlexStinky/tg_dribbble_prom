@@ -8,7 +8,7 @@ const TelegrafI18n = require('telegraf-i18n/lib/i18n');
 const { userService, paymentService } = require('./db');
 const { sender } = require('./sender');
 
-const { Queue } = require('../modules/Queue');
+const { Queue } = require('../modules/queue');
 
 const i18n = new TelegrafI18n({
     directory: './locales',
