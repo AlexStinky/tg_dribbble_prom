@@ -10,9 +10,9 @@ jobs:
     env:
       HOST: 86.106.181.150
       USERNAME: root
-      DIR_NAME: tg_dribbble_promo
-      SERVICE_NAME: tg_dribbble_promo
-      GITHUB_PATH: git@github.com:AlexStinky/tg_dribbble_promo
+      DIR_NAME: tg_dribbble_prom
+      SERVICE_NAME: tg_dribbble_prom
+      GITHUB_PATH: git@github.com:AlexStinky/tg_dribbble_prom
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

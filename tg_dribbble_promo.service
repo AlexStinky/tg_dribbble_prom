@@ -5,7 +5,7 @@ After=network.target
 [Service]
 ExecStart=npm run start
 ExecReload=npm run start
-WorkingDirectory=/opt/dribbble_promo/
+WorkingDirectory=/opt/dribbble_prom/
 KillMode=process
 Restart=always
 RestartSec=5
