@@ -3,6 +3,7 @@ const fs = require('fs');
 const Scene = require('telegraf/scenes/base');
 
 const middlewares = require('../scripts/middlewares');
+const messages = require('../scripts/messages');
 
 const {
     userService,
@@ -12,7 +13,7 @@ const {
 const { dribbbleService } = require('../services/dribbble');
 const { balanceService } = require('../services/balance');
 
-const DRIBBBLE_URL = 'https://dribbble.com/';
+const DRIBBBLE_URL = process.env.DRIBBBLE_URL;
 
 const DRIBBBLE_URL_REG = /((https|http)(:\/\/dribbble.com\/)|(\/))/g;
 const TX_HASH_REG = /(0x[0-9a-fA-F]{64})|([0-9A-Fa-f]{64})/;
@@ -40,10 +41,11 @@ function addUsername() {
                     url,
                     username
                 }),
-            extra: {}
+            extra: (check.success) ?
+                (messages.menu(ctx.state.user.locale)).extra : {}
         };
 
-        await ctx.replyWithHTML(message.text);
+        await ctx.replyWithHTML(message.text, message.extra);
 
         if (check.success) {
             await userService.update({ tg_id: ctx.from.id }, {
@@ -238,10 +240,15 @@ function topUpBalance() {
         }), {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: ctx.i18n.t('cancel_button'), callback_data: 'cancel' }]
+                    [{ text: ctx.i18n.t('back_button'), callback_data: 'back' }]
                 ]
             }
         });
+    });
+
+    balance.action('back', async (ctx) => {
+        await ctx.deleteMessage();
+        await ctx.scene.reenter();
     });
 
     balance.hears(TX_HASH_REG, async (ctx) => {
@@ -253,7 +260,13 @@ function topUpBalance() {
         const message = {
             type: 'text',
             text: ctx.i18n.t('txAccepted_message'),
-            extra: {}
+            extra: {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: ctx.i18n.t('back_button'), callback_data: 'back' }]
+                    ]
+                }
+            }
         };
 
         let check = null;
@@ -280,6 +293,7 @@ function topUpBalance() {
                 balanceService.enqueue(ctx.scene.state.data);
 
                 await ctx.replyWithHTML(message.text, message.extra);
+
                 return await ctx.scene.leave();
             } else {
                 message.text = ctx.i18n.t('txAlreadyUse_message');
@@ -295,20 +309,51 @@ function topUpBalance() {
         const {
             method
         } = ctx.scene.state.data;
+        const message = {
+            type: 'text',
+            text: '',
+            extra: {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: ctx.i18n.t('back_button'), callback_data: 'back' }]
+                    ]
+                }
+            }
+        };
 
         ctx.scene.state.data.amount = parseInt(ctx.message.text);
 
         if (method) {
             const CONFIG = ctx.scene.state.config;
+            const price = (((CONFIG.PRICES[method]['1000']) * ctx.scene.state.data.amount) / 1000).toString();
+            const order = ctx.scene.state.data.amount + ' 🥨';
+            const to = CONFIG[`${method}_WALLET_ADDRESS`];
+            const expire = new Date();
+            expire.setMonth(expire.getMonth() + 1);
 
-            ctx.scene.state.data.value = (((CONFIG.PRICES[method]['1000']) * ctx.scene.state.data.amount) / 1000).toString();
-            ctx.scene.state.data.to = CONFIG[`${method}_WALLET_ADDRESS`];
+            ctx.scene.state.data.value = price;
+            ctx.scene.state.data.to = to;
+            ctx.scene.state.expire_date = expire;
+            ctx.scene.state.data.order = order;
 
-            await ctx.replyWithHTML(ctx.i18n.t('enterHash_message', {
-                method,
-                price: ctx.scene.state.data.value,
-                address: ctx.scene.state.data.to
-            }));
+            switch (method) {
+                case 'USDT':
+                    const data = await paymentService.create(ctx.scene.state.data);
+
+                    balanceService.enqueue(data);
+
+                    return await ctx.scene.leave();
+                case 'ETH':
+                    message.text = ctx.i18n.t('enterHash_message', {
+                        method,
+                        price,
+                        to
+                    });
+
+                    break;
+            }
+
+            await ctx.replyWithHTML(message.text, message.extra);
         }
     });
 

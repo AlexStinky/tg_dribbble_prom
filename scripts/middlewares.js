@@ -75,43 +75,54 @@ const commands = async (ctx, next) => {
     let response_message = null;
 
     if (message && message.chat.type === 'private' && message.text) {
-        switch(message.text) {
-            case '/changeAccount':
-                return await ctx.scene.enter('username');
-            case '/balance':
-                const {
-                    balance,
-                    reserved
-                } = ctx.state.user;
-    
-                return await ctx.replyWithHTML(ctx.i18n.t('balance_message', {
-                    balance,
-                    reserved
-                }), {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: ctx.i18n.t('topUpBalance_button'), callback_data: 'topUpBalance' }]
-                        ]
-                    }
-                });
-            case '/add':
-                if (ctx.state.user.balance > 0) {
-                    return await ctx.scene.enter('task');
-                } else {
-                    await ctx.replyWithHTML(ctx.i18n.t('notEnoughFound_message'));
+        const _ = message.text;
+
+        if (_ === '/changeAccount') {
+            return await ctx.scene.enter('username');
+        }
+
+        if (_ === '/balance' || _ === ctx.i18n.t('balance_button')) {
+            const {
+                balance,
+                reserved
+            } = ctx.state.user;
+
+            return await ctx.replyWithHTML(ctx.i18n.t('balance_message', {
+                balance,
+                reserved
+            }), {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: ctx.i18n.t('topUpBalance_button'), callback_data: 'topUpBalance' }]
+                    ]
                 }
+            });
+        }
 
-                break;
-            case '/tasks':
-                ctx.session.tasks_skip = 1;
-                ctx.session.tasks = await helper.tasks(ctx, 0, TASKS_LIMIT);
+        if (_ === '/add' || _ === ctx.i18n.t('add_button')) {
+            if (ctx.state.user.balance > 0) {
+                return await ctx.scene.enter('task');
+            } else {
+                await ctx.replyWithHTML(ctx.i18n.t('notEnoughFound_message'));
+            }
+        }
 
-                const index = 0;
-                const task = ctx.session.tasks[index];
+        if (_ === '/tasks' || _ === ctx.i18n.t('tasks_button')) {
+            ctx.session.tasks_skip = 1;
+            ctx.session.tasks = await helper.tasks(ctx, 0, TASKS_LIMIT);
 
-                response_message = messages.taskMessage(user.locale, task, index, ctx.session.tasks_skip);
+            const index = 0;
+            const task = ctx.session.tasks[index];
 
-                return await ctx.replyWithHTML(response_message.text, response_message.extra);
+            response_message = messages.taskMessage(user.locale, task, index, ctx.session.tasks_skip);
+
+            return await ctx.replyWithHTML(response_message.text, response_message.extra);
+        }
+
+        if (_ === '/menu') {
+            const menu_message = messages.menu(ctx.state.user.locale);
+
+            await ctx.replyWithHTML(menu_message.text, menu_message.extra);
         }
     }
 

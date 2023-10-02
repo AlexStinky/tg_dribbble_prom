@@ -5,12 +5,14 @@ const PaymentSchema = new Schema({
     isSuccessful: Boolean,
     isChecked: Boolean,
     date: Date,
+    expire_date: Date,
     tg_id: String,
     method: String,
     amount: Number,
     value: String,
     to: String,
-    hash: String
+    hash: String,
+    order: String
 }, { versionKey: false });
 
 const Payment = mongoose.model('Payment', PaymentSchema);

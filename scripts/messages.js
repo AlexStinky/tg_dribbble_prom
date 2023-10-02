@@ -28,6 +28,27 @@ const pagination = (locale, index, temp, key, tasks_skip) => {
     return keyboard;
 };
 
+const menu = (locale) => {
+    const message = {
+        type: 'text',
+        text: i18n.t(locale, 'menu_message'),
+        extra: {
+            reply_markup: {
+                resize_keyboard: true,
+                keyboard: [
+                    [{ text: i18n.t(locale, 'balance_button') }],
+                    [
+                        { text: i18n.t(locale, 'add_button') },
+                        { text: i18n.t(locale, 'tasks_button') }
+                    ]
+                ]
+            }
+        }
+    };
+
+    return message;
+};
+
 const taskMessage = (locale, task, index, tasks_skip) => {
     const message = {
         type: 'text',
@@ -75,5 +96,6 @@ const taskMessage = (locale, task, index, tasks_skip) => {
 };
 
 module.exports = {
+    menu,
     taskMessage
 }
