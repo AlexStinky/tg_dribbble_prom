@@ -1,4 +1,5 @@
 start_message: ''
+menu_message: 'Добро пожаловать!'
 
 enterDribbbleUsername_message: 'Отправьте ссылку на ваш аккаунт либо введите юзернейм:'
 
@@ -17,7 +18,7 @@ notEnoughFound_message: 'На вашем балансе недостаточно
 
 balanceReplenished_message: 'Вы пополнили баланс <a href="tg://user?id=${id}">${username}</a> на ${credits} (всего: ${balance} 🥨)'
 
-tasksOver_message: 'Задачи для вас закончились'
+tasksOver_message: 'Задания для вас закончились'
 
 like_task: 'Перейдите <a href="${url}">по ссылке</a> и поставьте <b>лайк</b>.
 
@@ -43,10 +44,17 @@ enterAmount_message: 'Стоимость <b>1000 🥨 = ${price} ${method}</b>
 Введите необходимое количество 🥨 (мин. 1000):'
 enterHash_message: 'Отправьте <b>${price} ${method}</b> на этот адрес:
 
-<code>${address}</code>
+<code>${to}</code>
 
 
 После чего отправьте хеш транзакции:'
+
+invoiceUrlSuccessUSDT_message: 'Счёт создан!
+
+Вы хотите купить: ${order}
+
+Стоимость: ${price} USDT'
+invoiceUrlFailedUSDT_message: 'Не удалось создать счет, попробуйте позже'
 
 txAccepted_message: 'Ваша транзакция принята, ожидайте пополнение'
 txAlreadyUse_message: 'Эту транзакцию уже использовал другой пользователь'
@@ -62,6 +70,7 @@ userInfo_message: '<a href="tg://user?id=${id}">${username}</a>
 walletChanged_message: 'Вы изменили кошелек ${currency}: <code>${wallet}</code>'
 priceChanged_message: 'Вы изменили цену за ${amount} 🥨 на <b>${price} ${currency}</b>'
 cookiesChanged_message: 'Куки изменены'
+tokenChanged_message: 'Новый токен: <code>${token}</code>'
 
 like_action: 'лайк'
 likes_action: 'лайков'
@@ -70,6 +79,10 @@ comments_action: 'комментариев'
 follower_action: 'подписчик'
 followers_action: 'подписчиков'
 
+balance_button: 'Мой баланс'
+add_button: 'Добавить задание'
+tasks_button: 'Доступные задания'
+
 like_button: 'Лайк'
 comment_button: 'Комментарий'
 following_button: 'Подписка'
@@ -77,6 +90,7 @@ following_button: 'Подписка'
 topUpBalance_button: 'Пополнить баланс'
 ETH_button: 'ETH'
 USDT_button: 'USDT'
+pay_button: 'Оплатить'
 
 cancel_button: 'Отменить'
 back_button: 'Назад'

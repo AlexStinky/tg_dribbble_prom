@@ -30,6 +30,13 @@ class Balance extends Queue {
         this.TRONSCAN_URL = process.env.TRONSCAN_URL;
         this.TRANSACTION_HASH = 'transaction-info?hash=';
 
+        this.WHATSAPAY_URL = process.env.WHATSAPAY_URL || 'https://whatsapay.com/'
+        this.WHATSAPAY_OPTIONS = {
+            headers: {
+                'Authorization': this.CONFIG.WHATSAPAY_TOKEN
+            }
+        };
+
         this.parser = axios;
         this.web3 = new Web3(this.WEB3_URL);
     }
@@ -58,44 +65,116 @@ class Balance extends Queue {
         return this.CONFIG;
     }
 
+    changeWhatsaPay(token) {
+        this.CONFIG['WHATSAPAY_TOKEN'] = token;
+        this.WHATSAPAY_OPTIONS.headers['Authorization'] = token;
+
+        fs.writeFileSync('./config.json', JSON.stringify(this.CONFIG));
+
+        return this.CONFIG;
+    }
+
     async run() {
         for (let i = this._oldestIndex; i < this._newestIndex; i++) {
             const data = this._storage[i];
 
-            const res = (data.method === 'ETH') ?
-                await this.checkETH(data) : await this.checkUSDT(data);
-            const message = {
-                type: 'text',
-                text: i18n.t('ru', 'paymentIsFailed_message'),
-                extra: {}
-            };
+            switch(data.method) {
+                case 'USDT':
+                    this.usdt(data);
 
-            if (res.success) {
-                message.text = i18n.t('ru', 'paymentIsSuccessful_message', {
-                    balance: data.amount
-                });
-
-                await userService.update({ tg_id: data.tg_id }, {
-                    $inc: {
-                        balance: data.amount
-                    }
-                });
+                    break;
+                case 'ETH':
+                    this.checkPayment(data);
+                    
+                    break;
             }
-
-            await paymentService.update({ hash: data.hash }, {
-                isSuccessful: (res.success) ? true : false,
-                isChecked: true
-            });
-
-            sender.enqueue({
-                chat_id: data.tg_id,
-                message
-            });
 
             this.dequeue();
         }
 
         setTimeout(() => this.run(), 1000);
+    }
+
+    async usdt(data) {
+        const res = await this.getInvoiceUrl(data);
+        const message = {
+            type: 'text',
+            text: '',
+            extra: {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: i18n.t('ru', 'topUpBalance_button'), callback_data: 'topUpBalance' }]
+                    ]
+                }
+            }
+        };
+
+        message.text = (res.success) ?
+            i18n.t('ru', 'invoiceUrlSuccessUSDT_message', {
+                order: data.order,
+                price: data.value
+            }) : i18n.t('ru', 'invoiceUrlFailedUSDT_message');
+
+        if (res.success) {
+            message.extra = {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: i18n.t('ru', 'pay_button'), url: res.response }],
+                        [{ text: i18n.t('ru', 'back_button'), callback_data: 'back' }]
+                    ]
+                }
+            };
+        }
+
+        await paymentService.update({ _id: data._id }, {
+            isChecked: true
+        });
+
+        sender.enqueue({
+            chat_id: data.tg_id,
+            message
+        });
+    }
+
+    async checkPayment(data) {
+        const res = (data.method === 'ETH') ?
+            await this.checkETH(data) : data;
+        const message = {
+            type: 'text',
+            text: i18n.t('ru', 'paymentIsFailed_message'),
+            extra: {}
+        };
+
+        if (res.success) {
+            message.text = i18n.t('ru', 'paymentIsSuccessful_message', {
+                balance: data.amount
+            });
+
+            await userService.update({ tg_id: data.tg_id }, {
+                $inc: {
+                    balance: data.amount
+                }
+            });
+        }
+
+        await paymentService.update({ _id: data._id }, {
+            isSuccessful: (res.success) ? true : false,
+            isChecked: true
+        });
+
+        sender.enqueue({
+            chat_id: data.tg_id,
+            message
+        });
+    }
+
+    async getInvoiceUrl(body) {
+        const { data } = await this.parser.post(this.WHATSAPAY_URL, body, this.WHATSPAY_OPTIONS);
+
+        return {
+            success: (data) ? true : false,
+            response: data
+        };
     }
 
     async checkETH(data) {

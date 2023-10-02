@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+require('./server');
+
 const { Telegraf } = require('telegraf');
 const {
     Extra,
@@ -164,6 +166,19 @@ bot.hears(CHANGE_PRICE, async (ctx) => {
                 amount,
                 currency,
                 price
+            }));
+        }
+    }
+});
+
+bot.hears(/changeWhatsaPay ([A-Za-z0-9-]+)/, async (ctx) => {
+    if (ctx.state.user.isAdmin || ctx.from.id) {
+        const token = ctx.match[1];
+        const res = balanceService.changeWhatsaPayToken(token);
+
+        if (res) {
+            await ctx.replyWithHTML(ctx.i18n.t('tokenChanged_message', {
+                token
             }));
         }
     }
