@@ -20,7 +20,11 @@ const i18n = new TelegrafI18n({
     }
 });
 
+<<<<<<< HEAD
 app.set('port', process.env.PORT || 3000);
+=======
+app.set('port', process.env.PORT);
+>>>>>>> 0bfa5e3c175d5126b1e7b88c4b0493774b8823d1
 
 app.use(cors({ origin: "*" }));
 app.use(express.json());
@@ -31,7 +35,11 @@ app.post('/payments', async (req, res) => {
         const data = req.body;
 
         if (data) {
+<<<<<<< HEAD
             console.log(data)
+=======
+            balanceService.checkPayment(data);
+>>>>>>> 0bfa5e3c175d5126b1e7b88c4b0493774b8823d1
         }
 
         res.send('OK').status(200);
