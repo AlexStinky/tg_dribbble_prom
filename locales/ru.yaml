@@ -61,7 +61,7 @@ txAlreadyUse_message: 'Эту транзакцию уже использовал
 txIsntCorrect_message: 'Вы ввели некорректний хеш транзакции'
 
 paymentIsSuccessful_message: 'Ваш счет пополнен на <b>${balance}</b> 🥨'
-paymentIsFailed_message: 'Не удалось пополнить счет'
+paymentIsFailed_message: 'Не удалось пополнить счет либо оплата еще не прошла'
 
 userInfo_message: '<a href="tg://user?id=${id}">${username}</a>
 
@@ -71,6 +71,8 @@ walletChanged_message: 'Вы изменили кошелек ${currency}: <code>
 priceChanged_message: 'Вы изменили цену за ${amount} 🥨 на <b>${price} ${currency}</b>'
 cookiesChanged_message: 'Куки изменены'
 tokenChanged_message: 'Новый токен: <code>${token}</code>'
+
+paymentNotFound_message: 'Платеж не найден, свяжитесь с администрацией'
 
 like_action: 'лайк'
 likes_action: 'лайков'
@@ -91,6 +93,7 @@ topUpBalance_button: 'Пополнить баланс'
 ETH_button: 'ETH'
 USDT_button: 'USDT'
 pay_button: 'Оплатить'
+check_button: 'Проверить'
 
 cancel_button: 'Отменить'
 back_button: 'Назад'

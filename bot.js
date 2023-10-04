@@ -269,6 +269,21 @@ bot.action('topUpBalance', async (ctx) => {
     await ctx.scene.enter('balance');
 });
 
+bot.action(/cp-([A-Za-z0-9]+)/, async (ctx) => {
+    const _id = ctx.match[1];
+    const payment = await paymentService.get({ _id });
+
+    await ctx.deleteMessage();
+
+    if (payment) {
+        if (!payment.isSuccessful) {
+            balanceService.enqueue(payment);
+        }
+    } else {
+        await ctx.replyWithHTHML(ctx.i18n.t('paymentNotFound_message'));
+    }
+});
+
 bot.action([
     /nextTask-([-0-9]+)/,
     /doneTask-([0-9]+)-([0-9A-Za-z]+)/

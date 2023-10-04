@@ -32,6 +32,9 @@ app.post('/payments', async (req, res) => {
 
         if (data) {
             console.log(data)
+            /*
+                await balanceService.checkPayment(data);
+            */
         }
 
         res.send('OK').status(200);

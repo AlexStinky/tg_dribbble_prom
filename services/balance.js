@@ -80,7 +80,11 @@ class Balance extends Queue {
 
             switch(data.method) {
                 case 'USDT':
-                    this.usdt(data);
+                    if (data.isChecked) {
+                        this.checkPayment(data);
+                    } else {
+                        this.usdt(data);
+                    }
 
                     break;
                 case 'ETH':
@@ -120,15 +124,15 @@ class Balance extends Queue {
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: i18n.t('ru', 'pay_button'), url: res.response }],
-                        [{ text: i18n.t('ru', 'back_button'), callback_data: 'back' }]
+                        [{ text: i18n.t('ru', 'check_button'), callback_data: `cp-${data._id}` }]
                     ]
                 }
             };
-        }
 
-        await paymentService.update({ _id: data._id }, {
-            isChecked: true
-        });
+            await paymentService.update({ _id: data._id }, {
+                isChecked: true
+            });
+        }
 
         sender.enqueue({
             chat_id: data.tg_id,
@@ -136,9 +140,19 @@ class Balance extends Queue {
         });
     }
 
-    async checkPayment(data) {
-        const res = (data.method === 'ETH') ?
-            await this.checkETH(data) : data;
+    async getInvoiceUrl(body) {
+        const { data } = await this.parser.post(this.WHATSAPAY_URL, body, this.WHATSPAY_OPTIONS);
+
+        return {
+            success: (data) ? true : false,
+            response: data
+        };
+    }
+
+    async checkPayment(data, response = null) {
+        const res = (response) ?
+            response : (data.method === 'ETH') ?
+            await this.checkETH(data) : await this.checkUSDT(data);
         const message = {
             type: 'text',
             text: i18n.t('ru', 'paymentIsFailed_message'),
@@ -168,15 +182,6 @@ class Balance extends Queue {
         });
     }
 
-    async getInvoiceUrl(body) {
-        const { data } = await this.parser.post(this.WHATSAPAY_URL, body, this.WHATSPAY_OPTIONS);
-
-        return {
-            success: (data) ? true : false,
-            response: data
-        };
-    }
-
     async checkETH(data) {
         const res = await this.getTransaction(data.hash);
 
@@ -198,6 +203,18 @@ class Balance extends Queue {
         return {
             success: false,
             response: res.data
+        };
+    }
+
+    async checkUSDT(_) {
+        const {
+            _id
+        } = _;
+        const { data } = await this.parser.post(this.WHATSAPAY_URL + '/callback?order_id=' + _id, {}, this.WHATSAPAY_OPTIONS);
+
+        return {
+            success: (data) ? true : false,
+            response: data
         };
     }
 
