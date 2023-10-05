@@ -162,11 +162,13 @@ class Balance extends Queue {
                 response: data
             };
         } catch (e) {
-            console.log(e.response);
+            const res = (e.response) ? e.response.data : e;
+
+            console.log(res);
 
             return {
                 success: false,
-                response: e.response.data
+                response: res
             };
         }
     }
@@ -183,6 +185,13 @@ class Balance extends Queue {
             text: i18n.t('ru', 'paymentIsFailed_message'),
             extra: {}
         };
+
+        if (data.callback) {
+            if (data.callback.usd_money <= data.callback.money ||
+                data.status !== 'Approved') {
+                message.text = i18n.t('ru', 'paymentWhatsaPayIsFailed_message');
+            }
+        }
 
         if (res.success) {
             message.text = i18n.t('ru', 'paymentIsSuccessful_message', {
@@ -249,11 +258,13 @@ class Balance extends Queue {
                 response: data
             };
         } catch (e) {
-            console.log(e.response);
+            const res = (e.response) ? e.response.data : e;
+
+            console.log(res);
 
             return {
                 success: false,
-                response: e.response.data
+                response: res
             };
         }
     }
