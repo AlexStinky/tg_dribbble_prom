@@ -288,9 +288,9 @@ function topUpBalance() {
             if (!check) {
                 ctx.scene.state.data.hash = hash;
 
-                await paymentService.create(ctx.scene.state.data);
+                const data = await paymentService.create(ctx.scene.state.data);
 
-                balanceService.enqueue(ctx.scene.state.data);
+                balanceService.enqueue(data);
 
                 await ctx.replyWithHTML(message.text, message.extra);
 
