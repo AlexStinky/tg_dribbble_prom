@@ -12,7 +12,9 @@ const PaymentSchema = new Schema({
     value: String,
     to: String,
     hash: String,
-    order: String
+    order: String,
+    invoice_link: String | null,
+    callback: Object | null
 }, { versionKey: false });
 
 const Payment = mongoose.model('Payment', PaymentSchema);

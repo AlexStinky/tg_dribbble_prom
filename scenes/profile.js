@@ -335,6 +335,7 @@ function topUpBalance() {
             ctx.scene.state.data.to = to;
             ctx.scene.state.data.expire_date = expire;
             ctx.scene.state.data.order = order;
+            ctx.scene.state.data.callback = null;
 
             switch (method) {
                 case 'USDT':

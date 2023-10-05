@@ -82,10 +82,10 @@ class Balance extends Queue {
 
             switch(data.method) {
                 case 'USDT':
-                    if (data.isChecked) {
-                        this.checkPayment(data);
-                    } else {
+                    if (!data.invoice_link) {
                         this.usdt(data);
+                    } else {
+                        this.checkPayment(data);
                     }
 
                     break;
@@ -141,11 +141,11 @@ class Balance extends Queue {
                     ]
                 }
             };
-        }
 
-        await paymentService.update({ _id: data._id }, {
-            isChecked: true
-        });
+            await paymentService.update({ _id: data._id }, {
+                invoice_link: res.response
+            });
+        }
 
         sender.enqueue({
             chat_id: data.tg_id,
@@ -171,9 +171,12 @@ class Balance extends Queue {
         }
     }
 
-    async checkPayment(data, response = null) {
-        const res = (response) ?
-            response : (data.method === 'ETH') ?
+    async checkPayment(data) {
+        const res = (data.callback) ?
+            {
+                success: (data.status === 'Approved') ? true : false,
+                response: data.callback
+            } : (data.method === 'ETH') ?
             await this.checkETH(data) : await this.checkUSDT(data);
         const message = {
             type: 'text',
@@ -195,7 +198,11 @@ class Balance extends Queue {
 
         await paymentService.update({ _id: data._id }, {
             isSuccessful: (res.success) ? true : false,
-            isChecked: true
+            isChecked: true,
+            status: (data.callback) ?
+                data.callback.status : (res.success) ?
+                'Approved' : 'Failed',
+            callback: (data.callback) ? data.callback : null
         });
 
         sender.enqueue({
@@ -234,6 +241,8 @@ class Balance extends Queue {
                 _id
             } = _;
             const { data } = await this.parser.post(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS);
+
+            console.log(data)
 
             return {
                 success: (data) ? true : false,

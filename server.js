@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const TelegrafI18n = require('telegraf-i18n/lib/i18n');
 
+const { paymentService } = require('./services/db');
 const { balanceService } = require('./services/balance');
 
 const i18n = new TelegrafI18n({
@@ -26,17 +27,27 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post('/payments', async (req, res) => {
+app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
         const data = req.body;
 
-        console.log(req)
+        console.log(data)
 
         if (data) {
-            console.log(data)
-            /*
-                await balanceService.checkPayment(data);
-            */
+            const payment = await paymentService.get({ _id: data.payment_system_order_id });
+
+            if (payment) {
+                payment.callback = {
+                    status: data.status,
+                    money: data.money,
+                    usd_money: data.usd_money,
+                    created_at: data.created_at
+                };
+
+                balanceService.enqueue(payment);
+            } else {
+                console.log(`Payment not found:` + data);
+            }
         }
 
         res.send('OK').status(200);
