@@ -184,6 +184,13 @@ class Balance extends Queue {
             extra: {}
         };
 
+        if (data.callback) {
+            if (data.callback.usd_money <= data.callback.money ||
+                data.status !== 'Approved') {
+                message.text = i18n.t('ru', 'paymentWhatsaPayIsFailed_message');
+            }
+        }
+
         if (res.success) {
             message.text = i18n.t('ru', 'paymentIsSuccessful_message', {
                 balance: data.amount

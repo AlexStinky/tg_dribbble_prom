@@ -31,9 +31,7 @@ app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
         const data = req.body;
 
-        console.log(data)
-
-        if (data) {
+        if (data.status) {
             const payment = await paymentService.get({ _id: data.payment_system_order_id });
 
             if (payment) {
@@ -46,7 +44,7 @@ app.post(['/payments', '/payments/callback'], async (req, res) => {
 
                 balanceService.enqueue(payment);
             } else {
-                console.log(`Payment not found:` + data);
+                console.log(`Payment not found:`, data);
             }
         }
 
