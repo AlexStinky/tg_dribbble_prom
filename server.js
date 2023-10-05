@@ -30,6 +30,8 @@ app.post('/payments', async (req, res) => {
     try {
         const data = req.body;
 
+        console.log(req)
+
         if (data) {
             console.log(data)
             /*

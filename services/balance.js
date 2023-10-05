@@ -30,7 +30,9 @@ class Balance extends Queue {
         this.TRONSCAN_URL = process.env.TRONSCAN_URL;
         this.TRANSACTION_HASH = 'transaction-info?hash=';
 
-        this.WHATSAPAY_URL = process.env.WHATSAPAY_URL || 'https://whatsapay.com/'
+        this.WHATSAPAY_URL = process.env.WHATSAPAY_URL || 'https://api.whatsapay.com/';
+        this.WHATSAPAY_NEW_INVOICE = 'db/post_new_invoice';
+        this.WHATSAPAY_CALLBACK = 'callback?order_id=';
         this.WHATSAPAY_OPTIONS = {
             headers: {
                 'Authorization': this.CONFIG.WHATSAPAY_TOKEN
@@ -65,7 +67,7 @@ class Balance extends Queue {
         return this.CONFIG;
     }
 
-    changeWhatsaPay(token) {
+    changeWhatsaPayToken(token) {
         this.CONFIG['WHATSAPAY_TOKEN'] = token;
         this.WHATSAPAY_OPTIONS.headers['Authorization'] = token;
 
@@ -100,7 +102,18 @@ class Balance extends Queue {
     }
 
     async usdt(data) {
-        const res = await this.getInvoiceUrl(data);
+        const res = await this.getInvoiceUrl({
+            money: Number(data.value),
+            payment_system_order_id: data._id,
+            purpose_of_payment: [
+            {
+              product_name: data.order,
+              price: data.value
+            }],
+            expire_at: Date.parse(data.expire_date || new Date()),
+            lang: 'ru',
+            currency: 'usd'
+        });
         const message = {
             type: 'text',
             text: '',
@@ -128,11 +141,11 @@ class Balance extends Queue {
                     ]
                 }
             };
-
-            await paymentService.update({ _id: data._id }, {
-                isChecked: true
-            });
         }
+
+        await paymentService.update({ _id: data._id }, {
+            isChecked: true
+        });
 
         sender.enqueue({
             chat_id: data.tg_id,
@@ -141,12 +154,21 @@ class Balance extends Queue {
     }
 
     async getInvoiceUrl(body) {
-        const { data } = await this.parser.post(this.WHATSAPAY_URL, body, this.WHATSPAY_OPTIONS);
+        try {
+            const { data } = await this.parser.post(this.WHATSAPAY_URL + this.WHATSAPAY_NEW_INVOICE, body, this.WHATSAPAY_OPTIONS);
 
-        return {
-            success: (data) ? true : false,
-            response: data
-        };
+            return {
+                success: (data) ? true : false,
+                response: data
+            };
+        } catch (e) {
+            console.log(e.response);
+
+            return {
+                success: false,
+                response: e.response.data
+            };
+        }
     }
 
     async checkPayment(data, response = null) {
@@ -207,15 +229,24 @@ class Balance extends Queue {
     }
 
     async checkUSDT(_) {
-        const {
-            _id
-        } = _;
-        const { data } = await this.parser.post(this.WHATSAPAY_URL + '/callback?order_id=' + _id, {}, this.WHATSAPAY_OPTIONS);
+        try {
+            const {
+                _id
+            } = _;
+            const { data } = await this.parser.post(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS);
 
-        return {
-            success: (data) ? true : false,
-            response: data
-        };
+            return {
+                success: (data) ? true : false,
+                response: data
+            };
+        } catch (e) {
+            console.log(e.response);
+
+            return {
+                success: false,
+                response: e.response.data
+            };
+        }
     }
 
     async getTransaction(hash) {
@@ -236,7 +267,7 @@ class Balance extends Queue {
         }
     }
 
-    async checkUSDT(_) {
+    /*async checkUSDT(_) {
         const { data } = await this.parser.get(this.TRONSCAN_URL + this.TRANSACTION_HASH + _.hash);
 
         if (data) {
@@ -248,7 +279,7 @@ class Balance extends Queue {
         return {
             success: false,
             response: data
-        }
+        };
     }
 
     async tronscan(tx, address, value) {
@@ -276,7 +307,7 @@ class Balance extends Queue {
                 response: tx
             };
         }
-    }
+    }*/
 }
 
 const balanceService = new Balance();

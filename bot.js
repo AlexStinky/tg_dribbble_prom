@@ -171,7 +171,7 @@ bot.hears(CHANGE_PRICE, async (ctx) => {
     }
 });
 
-bot.hears(/changeWhatsaPay ([A-Za-z0-9-]+)/, async (ctx) => {
+bot.hears(/changeWhatsaPay ([A-Za-z0-9-_,.\s]+)/, async (ctx) => {
     if (ctx.state.user.isAdmin || ctx.from.id) {
         const token = ctx.match[1];
         const res = balanceService.changeWhatsaPayToken(token);

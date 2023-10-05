@@ -56,7 +56,7 @@ const start = async (ctx, next) => {
             ctx.i18n.locale(ctx.state.user.locale);
 
             if (ctx.state.user.dribbble_username.length === 0) {
-                return await ctx.scene.enter('username');
+                return await ctx.scene.enter('username', { user: ctx.state.user });
             }
         } catch {
             //...

@@ -42,7 +42,7 @@ function addUsername() {
                     username
                 }),
             extra: (check.success) ?
-                (messages.menu(ctx.state.user.locale)).extra : {}
+                (messages.menu(ctx.scene.state.user.locale)).extra : {}
         };
 
         await ctx.replyWithHTML(message.text, message.extra);
@@ -333,7 +333,7 @@ function topUpBalance() {
 
             ctx.scene.state.data.value = price;
             ctx.scene.state.data.to = to;
-            ctx.scene.state.expire_date = expire;
+            ctx.scene.state.data.expire_date = expire;
             ctx.scene.state.data.order = order;
 
             switch (method) {
