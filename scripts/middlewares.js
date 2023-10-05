@@ -119,6 +119,10 @@ const commands = async (ctx, next) => {
             return await ctx.replyWithHTML(response_message.text, response_message.extra);
         }
 
+        if (_ === ctx.i18n.t('topUpBalance_button')) {
+            return await ctx.scene.enter('balance');
+        }
+
         if (_ === '/menu') {
             const menu_message = messages.menu(ctx.state.user.locale);
 

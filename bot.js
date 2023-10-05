@@ -265,7 +265,12 @@ bot.action('cancel', async (ctx) => {
 });
 
 bot.action('topUpBalance', async (ctx) => {
-    await ctx.deleteMessage();
+    try {
+        await ctx.deleteMessage();
+    } catch {
+        //...
+    }
+
     await ctx.scene.enter('balance');
 });
 

@@ -40,7 +40,8 @@ const menu = (locale) => {
                     [
                         { text: i18n.t(locale, 'add_button') },
                         { text: i18n.t(locale, 'tasks_button') }
-                    ]
+                    ],
+                    [{ text: i18n.t(locale, 'topUpBalance_button') }]
                 ]
             }
         }
