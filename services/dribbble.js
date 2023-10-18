@@ -87,6 +87,8 @@ class Dribbble extends Queue {
                 break;
         }
 
+        console.log(res.response)
+
         if (res.success) {
             if (task && task.isActive) {
                 task.completed++;
