@@ -42,7 +42,7 @@ enterUrl_message: 'Send the link to your shot:'
 enterCount_message: 'Your balance: ${balance} 💰
 
 Enter the number of <b>${actions}</b> you want to get (1 ${action} = ${price} 💰):'
-taskIsAdded_message: 'Task added'
+taskIsAdded_message: 'You task is added to a queue ✅ You will get notified once the execution is done 👍'
 
 dataIsntCorrect_message: 'You entered incorrect data'
 notEnoughFound_message: 'There are not enough funds on your balance'
