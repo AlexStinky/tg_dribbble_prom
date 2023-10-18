@@ -51,21 +51,24 @@ balanceReplenished_message: 'You top up balance <a href="tg://user?id=${id}">${u
 
 tasksOver_message: 'The tasks for you are over'
 
-like_task: 'Follow <a href="${url}">link</a> and give <b>like</b>.
+like_task: 'Follow the link ${url} and <b>like</b>.
 
-To confirm execution, click on the ✅ button
 
-After verification you will receive <b>${price} $</b> to your account'
-comment_task: 'Follow the <a href="${url}">link</a> and leave a <b>comment</b>.
+To confirm execution click on Done ✅ button below 👇.
 
-To confirm execution, click on the ✅ button
+After verification you will get <b>${price} 💰</b>'
+comment_task: 'Follow the link ${url} and post a <b>comment</b>.
 
-After verification you will receive <b>${price} $</b> to your account'
-following_task: 'Follow <a href="${url}">link</a> and <b>subscribe</b>.
 
-To confirm execution, click on the ✅ button
+To confirm execution click on Done ✅ button below 👇.
 
-After verification you will receive <b>${price} $</b> to your account'
+After verification you will get <b>${price} 💰</b>'
+following_task: 'Follow the link ${url} and <b>subscribe</b> to the user.
+
+
+To confirm execution click on Done ✅ button below 👇.
+
+After verification you will get <b>${price} 💰</b>'
 
 balance_message: 'Available on your account: <b>${balance} 💰</b> (<i>reserved for payments ${reserved} 💰</i>)'
 
@@ -141,5 +144,5 @@ check_button: 'Check'
 cancel_button: 'Cancel'
 back_button: 'Back'
 next_button: 'Next'
-done_button: 'Done'
+done_button: 'Done ✅'
 skip_button: 'Skip'
