@@ -38,7 +38,7 @@ Once you collect 200💰 you can trade them 🔄 for views, likes, comments or f
 accountNotFound_message: 'Account <a href="${url}">${username}</a> not found'
 
 chooseType_message: 'Select task type:'
-enterUrl_message: 'Send page url:'
+enterUrl_message: 'Send the link to your shot:'
 enterCount_message: 'Your balance: ${balance} 💰
 
 Enter count <b>${actions}</b> (1 ${action} = ${price} 💰):'
