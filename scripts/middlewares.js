@@ -15,8 +15,8 @@ const start = async (ctx, next) => {
     if (message && message.chat.type == 'private') {
         try {
             const username = ctx.chat.username || ctx.from.first_name;
-            const locale = (LANGUAGES.test(ctx.from.language_code)) ?
-                ctx.from.language_code : 'ru';
+            const locale = 'en'; /*(LANGUAGES.test(ctx.from.language_code)) ?
+                ctx.from.language_code : 'ru';*/
 
             ctx.state.user = await userService.get({ tg_id: ctx.from.id });
 

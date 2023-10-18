@@ -326,7 +326,7 @@ function topUpBalance() {
         if (method) {
             const CONFIG = ctx.scene.state.config;
             const price = (((CONFIG.PRICES[method]['1000']) * ctx.scene.state.data.amount) / 1000).toString();
-            const order = ctx.scene.state.data.amount + ' 🥨';
+            const order = ctx.scene.state.data.amount + ' 💰';
             const to = CONFIG[`${method}_WALLET_ADDRESS`];
             const expire = new Date();
             expire.setMonth(expire.getMonth() + 1);

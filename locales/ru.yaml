@@ -1,53 +1,21 @@
-menu_message: 'Hello!'
+menu_message: 'Добро пожаловать!'
 
-enterDribbbleUsername_message: 'Send me the link to your DRIBBBLE account or a username. It must meet the following conditions:
+enterDribbbleUsername_message: 'Отправьте ссылку на ваш аккаунт либо введите юзернейм:'
 
-👨‍💻the presence of an avatar,
-
-💼 at least 3 shots,
-
-📆 more than 30 days from the registration date.
-
-
-FAKES WILL BE BANNED 🔒
-
-
-Please follow the input format:
-
-https://dribbble.com/account_name
-
-Or just the username'
-
-accountAdded_message: '✔️ Your <a href="${url}">account</a> is active now🔥
-
-
-⚡️Press New Tasks button to get tasks. 
-
-⚡️For each completed task, you receive 1💰
-
-
-Once you collect 200💰 you can trade them 🔄 for views, likes, comments or followers, according to the exchange rate:
-
-170💰 = 200 views;
-
-170💰 = 20 likes;
-
-170💰 = 2 comments;
-
-200💰 = 1 follower.'
+accountAdded_message: 'Вы добавили <a href="${url}">аккаунт</a>'
 accountNotFound_message: 'Аккаунт <a href="${url}">${username}</a> не найден'
 
 chooseType_message: 'Выберите тип задачи:'
 enterUrl_message: 'Отправьте ссылку на страницу:'
-enterCount_message: 'Ваш баланс: ${balance} 🥨
+enterCount_message: 'Ваш баланс: ${balance} 💰
 
-Введите количество <b>${actions}</b> (1 ${action} = ${price} 🥨):'
+Введите количество <b>${actions}</b> (1 ${action} = ${price} 💰):'
 taskIsAdded_message: 'Задача добавлена'
 
 dataIsntCorrect_message: 'Вы ввели некорректные данные'
 notEnoughFound_message: 'На вашем балансе недостаточно средств'
 
-balanceReplenished_message: 'Вы пополнили баланс <a href="tg://user?id=${id}">${username}</a> на ${credits} (всего: ${balance} 🥨)'
+balanceReplenished_message: 'Вы пополнили баланс <a href="tg://user?id=${id}">${username}</a> на ${credits} (всего: ${balance} 💰)'
 
 tasksOver_message: 'Задания для вас закончились'
 
@@ -67,12 +35,12 @@ following_task: 'Перейдите <a href="${url}">по ссылке</a> и <b
 
 После проверки Вы получите на счёт <b>${price} $</b>'
 
-balance_message: 'На вашем счету доступно: <b>${balance} 🥨</b> (<i>зарезервировано под выплаты ${reserved} 🥨</i>)'
+balance_message: 'На вашем счету доступно: <b>${balance} 💰</b> (<i>зарезервировано под выплаты ${reserved} 💰</i>)'
 
 choosePaymentMethod_message: 'Выберите метод для оплаты:'
-enterAmount_message: 'Стоимость <b>1000 🥨 = ${price} ${method}</b>
+enterAmount_message: 'Стоимость <b>1000 💰 = ${price} ${method}</b>
 
-Введите необходимое количество 🥨 (мин. 1000):'
+Введите необходимое количество 💰 (мин. 1000):'
 enterHash_message: 'Отправьте <b>${price} ${method}</b> на этот адрес:
 
 <code>${to}</code>
@@ -102,7 +70,7 @@ txAccepted_message: 'Ваша транзакция принята, ожидай�
 txAlreadyUse_message: 'Эту транзакцию уже использовал другой пользователь'
 txIsntCorrect_message: 'Вы ввели некорректний хеш транзакции'
 
-paymentIsSuccessful_message: 'Ваш счет пополнен на <b>${balance}</b> 🥨'
+paymentIsSuccessful_message: 'Ваш счет пополнен на <b>${balance}</b> 💰'
 paymentIsFailed_message: 'Не удалось пополнить счет либо оплата еще не прошла'
 paymentNotFound_message: 'Платеж не найден, свяжитесь с администрацией'
 paymentWhatsaPayIsFailed_message: 'Вы внесли недостаточно средств'
@@ -112,7 +80,7 @@ userInfo_message: '<a href="tg://user?id=${id}">${username}</a>
 Админ: ${isAdmin}'
 
 walletChanged_message: 'Вы изменили кошелек ${currency}: <code>${wallet}</code>'
-priceChanged_message: 'Вы изменили цену за ${amount} 🥨 на <b>${price} ${currency}</b>'
+priceChanged_message: 'Вы изменили цену за ${amount} 💰 на <b>${price} ${currency}</b>'
 cookiesChanged_message: 'Куки изменены'
 tokenChanged_message: 'Новый токен: <code>${token}</code>'
 
@@ -123,15 +91,15 @@ comments_action: 'комментариев'
 follower_action: 'подписчик'
 followers_action: 'подписчиков'
 
-balance_button: 'Balance💰'
-add_button: 'Add Task⚡️'
-tasks_button: 'Available Tasks⏱️'
+balance_button: 'Мой баланс'
+add_button: 'Добавить задание'
+tasks_button: 'Доступные задания'
 
 like_button: 'Лайк'
 comment_button: 'Комментарий'
 following_button: 'Подписка'
 
-topUpBalance_button: 'Top Up 🤑'
+topUpBalance_button: 'Пополнить баланс'
 ETH_button: 'ETH'
 USDT_button: 'USDT'
 pay_button: 'Оплатить'
