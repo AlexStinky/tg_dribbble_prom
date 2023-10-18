@@ -120,12 +120,12 @@ bot.command('test', async (ctx) => {
 });
 
 bot.command('del', async (ctx) => {
-    /*if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
+    if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
         const res = await taskService.deleteAll({});
         await jobService.deleteAll({});
 
         await ctx.replyWithHTML(res);
-    }*/
+    }
 });
 
 bot.hears(CHANGE_WALLET, async (ctx) => {
