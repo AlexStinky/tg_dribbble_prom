@@ -123,7 +123,7 @@ const commands = async (ctx, next) => {
             return await ctx.scene.enter('balance');
         }
 
-        if (_ === '/menu') {
+        if (_ === '/menu' || _ === '/start') {
             const menu_message = messages.menu(ctx.state.user.locale);
 
             await ctx.replyWithHTML(menu_message.text, menu_message.extra);

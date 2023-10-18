@@ -1,9 +1,40 @@
-start_message: ''
-menu_message: 'Добро пожаловать!'
+menu_message: 'Hello!'
 
-enterDribbbleUsername_message: 'Отправьте ссылку на ваш аккаунт либо введите юзернейм:'
+enterDribbbleUsername_message: 'Send me the link to your DRIBBBLE account or a username. It must meet the following conditions:
 
-accountAdded_message: 'Вы добавили <a href="${url}">аккаунт</a>'
+👨‍💻the presence of an avatar,
+
+💼 at least 3 shots,
+
+📆 more than 30 days from the registration date.
+
+
+FAKES WILL BE BANNED 🔒
+
+
+Please follow the input format:
+
+https://dribbble.com/account_name
+
+Or just the username'
+
+accountAdded_message: '✔️ Your <a href="${url}">account</a> is active now🔥
+
+
+⚡️Press New Tasks button to get tasks. 
+
+⚡️For each completed task, you receive 1💰
+
+
+Once you collect 200💰 you can trade them 🔄 for views, likes, comments or followers, according to the exchange rate:
+
+170💰 = 200 views;
+
+170💰 = 20 likes;
+
+170💰 = 2 comments;
+
+200💰 = 1 follower.'
 accountNotFound_message: 'Аккаунт <a href="${url}">${username}</a> не найден'
 
 chooseType_message: 'Выберите тип задачи:'
@@ -92,15 +123,15 @@ comments_action: 'комментариев'
 follower_action: 'подписчик'
 followers_action: 'подписчиков'
 
-balance_button: 'Мой баланс'
-add_button: 'Добавить задание'
-tasks_button: 'Доступные задания'
+balance_button: 'Balance💰'
+add_button: 'Add Task⚡️'
+tasks_button: 'Available Tasks⏱️'
 
 like_button: 'Лайк'
 comment_button: 'Комментарий'
 following_button: 'Подписка'
 
-topUpBalance_button: 'Пополнить баланс'
+topUpBalance_button: 'Top Up 🤑'
 ETH_button: 'ETH'
 USDT_button: 'USDT'
 pay_button: 'Оплатить'
