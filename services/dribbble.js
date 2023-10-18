@@ -219,6 +219,8 @@ class Dribbble extends Queue {
             }
         });
 
+        console.log(this.url, username, this.LIKES, this.cookies, data)
+
         if (data) {
             const { document } = new JSDOM(data).window;
             const list = Array.from(document.body.querySelectorAll('div.likes-page-shots > ol > li'));
