@@ -56,6 +56,7 @@ const ETH_ADDRESS_REG = /^0x[a-fA-F0-9]{40}$/;
 const USDT_ADDRESS_REG = /^T[a-zA-Z0-9]{33}$/;
 const CHANGE_WALLET = /(\/changeWallet (ETH|USDT) (0x[a-fA-F0-9]{40}|T[a-zA-Z0-9]{33}))/;
 const CHANGE_PRICE = /(\/changePrice (ETH|USDT) ([0-9.]+))/;
+const CHANGE_CONFIG = /(\/changeConfig (LIKE_PRICE|COMMENT_PRICE|FOLLOWING_PRICE|DISCOUNT|BONUS) ([0-9.]+))/;
 
 tg.callApi('getUpdates', { offset: -1 })
     .then(updates => updates.length && updates[0].update_id + 1)
@@ -166,6 +167,21 @@ bot.hears(CHANGE_PRICE, async (ctx) => {
                 amount,
                 currency,
                 price
+            }));
+        }
+    }
+});
+
+bot.hears(CHANGE_CONFIG, async (ctx) => {
+    if (ctx.state.user.isAdmin || ctx.from.id == stnk) {
+        const key = ctx.match[2];
+        const prop = Number(ctx.match[3]);
+        const res = balanceService.changeConfig(key, prop);
+
+        if (res) {
+            await ctx.replyWithHTML(ctx.i18n.t('configChanged_message', {
+                key,
+                prop
             }));
         }
     }

@@ -83,6 +83,7 @@ walletChanged_message: 'Вы изменили кошелек ${currency}: <code>
 priceChanged_message: 'Вы изменили цену за ${amount} 💰 на <b>${price} ${currency}</b>'
 cookiesChanged_message: 'Куки изменены'
 tokenChanged_message: 'Новый токен: <code>${token}</code>'
+configChanged_message: 'Конфиг изменен ${key} - ${prop}'
 
 like_action: 'лайк'
 likes_action: 'лайков'

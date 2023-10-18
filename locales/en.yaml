@@ -115,6 +115,7 @@ walletChanged_message: 'You change wallet ${currency}: <code>${wallet}</code>'
 priceChanged_message: 'You change price for ${amount} 💰 on <b>${price} ${currency}</b>'
 cookiesChanged_message: 'Cookies changed'
 tokenChanged_message: 'New token: <code>${token}</code>'
+configChanged_message: 'Config changed: ${key} - ${prop}'
 
 like_action: 'like'
 likes_action: 'likes'

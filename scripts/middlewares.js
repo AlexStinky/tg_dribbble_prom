@@ -100,7 +100,7 @@ const commands = async (ctx, next) => {
         }
 
         if (_ === '/add' || _ === ctx.i18n.t('add_button')) {
-            if (ctx.state.user.balance > 0) {
+            if (ctx.state.user.balance >= 200) {
                 return await ctx.scene.enter('task');
             } else {
                 await ctx.replyWithHTML(ctx.i18n.t('notEnoughFound_message'));

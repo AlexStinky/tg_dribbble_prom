@@ -59,6 +59,14 @@ class Balance extends Queue {
         return this.CONFIG;
     }
 
+    changeConfig(key, prop) {
+        this.CONFIG[key] = prop;
+
+        fs.writeFileSync('./config.json', JSON.stringify(this.CONFIG));
+
+        return this.CONFIG;
+    }
+
     changeCookies(cookies) {
         this.CONFIG['COOKIES'] = cookies;
 
