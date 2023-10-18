@@ -1,8 +1,8 @@
 const { taskService, jobService } = require('../services/db');
 
 const tasks = async (ctx, skip, limit) => {
-    const jobs = (await jobService.getAll({
-        status: 'failed',
+    let jobs = (await jobService.getAll({
+        status: { $ne: 'failed' },
         $or: [
             { tg_id: ctx.from.id },
             { dribbble_username: ctx.state.user.dribbble_username }

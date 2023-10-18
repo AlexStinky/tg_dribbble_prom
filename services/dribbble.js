@@ -7,6 +7,7 @@ const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
 
+const { sender } = require('./sender');
 const { jobService, userService, taskService } = require('./db');
 
 const { Queue } = require('../modules/queue');
@@ -20,6 +21,8 @@ class Dribbble extends Queue {
         this.parser = axios;
         this.browser = {};
         this.cookies = '';
+
+        this.CONFIG = {};
 
         this.URL = process.env.DRIBBBLE_URL;
         this.FOLLOWING = '/following';
@@ -52,9 +55,9 @@ class Dribbble extends Queue {
     }*/
 
     async run() {
-        const CONFIG = JSON.parse(fs.readFileSync('./config.json'));
+        this.CONFIG = JSON.parse(fs.readFileSync('./config.json'));
 
-        this.cookies = CONFIG.COOKIES;
+        this.cookies = this.CONFIG.COOKIES;
 
         for (let i = this._oldestIndex; i < this._newestIndex; i++) {
             const data = this._storage[i];
@@ -87,8 +90,6 @@ class Dribbble extends Queue {
                 break;
         }
 
-        console.log(res.response)
-
         if (res.success) {
             if (task && task.isActive) {
                 task.completed++;
@@ -99,7 +100,7 @@ class Dribbble extends Queue {
 
                 await taskService.update({ _id: task._id }, task);
 
-                await jobService.update({ task_id: task._id }, {
+                await jobService.update({ _id: data.job_id }, {
                     isComplited: true,
                     status: 'success',
                 });
@@ -123,9 +124,18 @@ class Dribbble extends Queue {
                     response: 'OK'
                 };
             }
+        } else if (res.isError) {
+            sender.enqueue({
+                chat_id: this.CONFIG.LOGS_ID,
+                message: {
+                    type: 'text',
+                    text: (res.response) ? JSON.stringify(res.response) : 'Error',
+                    extra: {}
+                }
+            });
         }
 
-        await jobService.update({ task_id: task._id }, {
+        await jobService.update({ _id: data.job_id }, {
             isComplited: true,
             status: 'failed'
         });
@@ -150,6 +160,7 @@ class Dribbble extends Queue {
         } else {
             return {
                 success: false,
+                isError: true,
                 response: data
             }
         }
@@ -169,6 +180,7 @@ class Dribbble extends Queue {
         } else {
             return {
                 success: false,
+                isError: true,
                 response: data
             }
         }
@@ -205,6 +217,7 @@ class Dribbble extends Queue {
         } else {
             return {
                 success: false,
+                isError: true,
                 response: data
             };
         }
@@ -218,8 +231,6 @@ class Dribbble extends Queue {
                 'Cookie': this.cookies
             }
         });
-
-        console.log(this.url, username, this.LIKES, this.cookies, data)
 
         if (data) {
             const { document } = new JSDOM(data).window;
@@ -239,6 +250,7 @@ class Dribbble extends Queue {
         } else {
             return {
                 success: false,
+                isError: true,
                 response: data
             };
         }
@@ -263,11 +275,12 @@ class Dribbble extends Queue {
 
             return {
                 success: (check) ? true : false,
-                response: check
+                response: (check) ? check : data
             };
         } else {
             return {
                 success: false,
+                isError: true,
                 response: data
             };
         }

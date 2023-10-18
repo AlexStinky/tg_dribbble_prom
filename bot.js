@@ -56,7 +56,7 @@ const ETH_ADDRESS_REG = /^0x[a-fA-F0-9]{40}$/;
 const USDT_ADDRESS_REG = /^T[a-zA-Z0-9]{33}$/;
 const CHANGE_WALLET = /(\/changeWallet (ETH|USDT) (0x[a-fA-F0-9]{40}|T[a-zA-Z0-9]{33}))/;
 const CHANGE_PRICE = /(\/changePrice (ETH|USDT) ([0-9.]+))/;
-const CHANGE_CONFIG = /(\/changeConfig (LIKE_PRICE|COMMENT_PRICE|FOLLOWING_PRICE|DISCOUNT|BONUS) ([0-9.]+))/;
+const CHANGE_CONFIG = /(\/changeConfig (LIKE_PRICE|COMMENT_PRICE|FOLLOWING_PRICE|DISCOUNT|BONUS|LOGS_ID) ([-0-9.]+))/;
 
 tg.callApi('getUpdates', { offset: -1 })
     .then(updates => updates.length && updates[0].update_id + 1)
@@ -101,7 +101,7 @@ bot.command('update', async (ctx) => {
 
 bot.command('db', async (ctx) => {
     if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
-        const res = await userService.getAll({});
+        const res = await taskService.getAll({});
 
         console.log(res);
     }
@@ -200,7 +200,7 @@ bot.hears(/changeWhatsaPay ([A-Za-z0-9-_,.\s]+)/, async (ctx) => {
     }
 });
 
-bot.hears(/changeCookies ([A-Za-z0-9%${}=_;:*'.,-\s]+)/, async (ctx) => {
+bot.hears(/changeCookies ([A-Za-z0-9%${}=_;:*'".,-\s]+)/, async (ctx) => {
     if (ctx.state.user.isAdmin || ctx.from.id == stnk) {
         const cookies = ctx.match[1];
 
@@ -316,7 +316,7 @@ bot.action([
         const task = await taskService.get({ _id: id });
 
         if (task) {
-            await jobService.create({
+            const res = await jobService.create({
                 task_id: task._id,
                 tg_id: ctx.from.id,
                 dribbble_username: ctx.state.user.dribbble_username,
@@ -328,6 +328,7 @@ bot.action([
 
             dribbbleService.enqueue({
                 task_id: task._id,
+                job_id: res._id,
                 tg_id: ctx.from.id,
                 dribbble_username: ctx.state.user.dribbble_username,
             });

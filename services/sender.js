@@ -46,7 +46,8 @@ class Sender extends Queue {
         await sleep(this.limit);
 
         try {
-            const text = (message.text) ? message.text.substring(0, 4095) : null;
+            const text = (message.text) ?
+                message.text.substring(0, 4095) : null;
             const extra = {
                 caption: text,
                 parse_mode: 'HTML',

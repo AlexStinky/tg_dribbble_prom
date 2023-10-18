@@ -5,7 +5,8 @@
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx kill-port 3000 && node bot"
+    "start": "npx kill-port 3000 && node bot",
+    "dev": "node bot"
   },
   "keywords": [],
   "author": "Stinky",
