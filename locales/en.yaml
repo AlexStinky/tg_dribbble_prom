@@ -49,7 +49,7 @@ notEnoughFound_message: 'There are not enough funds on your balance'
 
 balanceReplenished_message: 'You top up balance <a href="tg://user?id=${id}">${username}</a> on ${credits} (all: ${balance} 💰)'
 
-tasksOver_message: 'The tasks for you are over'
+tasksOver_message: 'No tasks available for now. Please check again later'
 
 like_task: 'Follow the link ${url} and <b>like</b>.
 
