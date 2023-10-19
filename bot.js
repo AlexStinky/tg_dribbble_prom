@@ -363,7 +363,7 @@ bot.action([
 
     const task = (ctx.session.tasks.length > 0) ? ctx.session.tasks[index] : null;
     const message = messages.taskMessage(ctx.state.user.locale, task, index, ctx.session.tasks_skip);
-    message.text += doneTask + '\n\n' + message.text;
+    message.text = doneTask + '\n\n' + message.text;
 
     await ctx.deleteMessage();
     await ctx.replyWithHTML(message.text, message.extra);
