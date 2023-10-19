@@ -311,6 +311,8 @@ bot.action([
 ], async (ctx) => {
     let index = parseInt(ctx.match[1]);
 
+    let doneTask = '';
+
     if (ctx.match[0].includes('doneTask')) {
         const id = ctx.match[2];
         const task = await taskService.get({ _id: id });
@@ -332,6 +334,8 @@ bot.action([
                 tg_id: ctx.from.id,
                 dribbble_username: ctx.state.user.dribbble_username,
             });
+
+            doneTask = ctx.i18n.t('taskChecking_message');
 
             ctx.session.tasks = (ctx.session.tasks) ?
                 ctx.session.tasks.filter((el) => el._id != id) : null;
@@ -359,6 +363,7 @@ bot.action([
 
     const task = (ctx.session.tasks.length > 0) ? ctx.session.tasks[index] : null;
     const message = messages.taskMessage(ctx.state.user.locale, task, index, ctx.session.tasks_skip);
+    message.text += doneTask + '\n\n' + message.text;
 
     await ctx.deleteMessage();
     await ctx.replyWithHTML(message.text, message.extra);

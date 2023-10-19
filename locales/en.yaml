@@ -105,6 +105,8 @@ txAccepted_message: 'Your transaction has been accepted, please wait for your re
 txAlreadyUse_message: 'This transaction has already been used by another user'
 txIsntCorrect_message: 'You entered an incorrect transaction hash'
 
+taskChecking_message: 'Bot checks the completion of the task and transfers 💰 to you'
+
 paymentIsSuccessful_message: 'Your account has been replenished with <b>${balance}</b> 💰'
 paymentIsFailed_message: 'The account could not be replenished or the payment has not yet been processed'
 paymentNotFound_message: 'Payment not found, contact administration'
