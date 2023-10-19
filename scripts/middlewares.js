@@ -55,8 +55,8 @@ const start = async (ctx, next) => {
 
             ctx.i18n.locale(ctx.state.user.locale);
 
-            if (ctx.state.user.dribbble_username.length === 0) {
-                return await ctx.scene.enter('username', { user: ctx.state.user });
+            if (ctx.state.user.dribbble_username.length === 0 && !ctx.scene.state.data) {
+                return await ctx.scene.enter('username');
             }
         } catch {
             //...
@@ -78,7 +78,7 @@ const commands = async (ctx, next) => {
         const _ = message.text;
 
         if (_ === '/change') {
-            return await ctx.scene.enter('username', { user: ctx.state.user });
+            return await ctx.scene.enter('username');
         }
 
         if (_ === '/balance' || _ === ctx.i18n.t('balance_button')) {

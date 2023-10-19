@@ -23,9 +23,12 @@ const USDT_TX_REG = /([0-9A-Fa-f]{64})/;
 function addUsername() {
     const username = new Scene('username');
 
+    username.use(middlewares.start);
     username.use(middlewares.commands);
 
     username.enter(async (ctx) => {
+        ctx.scene.state.data = {};
+
         await ctx.replyWithHTML(ctx.i18n.t('enterDribbbleUsername_message'));
     });
 
@@ -44,7 +47,7 @@ function addUsername() {
                     username
                 }),
             extra: (check.success) ?
-                (messages.menu(ctx.scene.state.user.locale)).extra : {}
+                (messages.menu(ctx.state.user.locale)).extra : {}
         };
 
         await ctx.replyWithHTML(message.text, message.extra);
