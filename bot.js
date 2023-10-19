@@ -81,19 +81,8 @@ bot.command('update', async (ctx) => {
             reserved: 0,
             balance: 0
         });
-
-        for (let i = 0; i < 21; i++) {
-            await taskService.create({
-                tg_id: ctx.from.id,
-                type: 'like',
-                creation_date: new Date(),
-                isActive: true,
-                data: '19510861',
-                all: 10,
-                completed: 0,
-                price: 1 + i
-            });
-        }
+        await taskService.deleteAll({});
+        await jobService.deleteAll({});
 
         await ctx.replyWithHTML(res);
     }

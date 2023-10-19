@@ -35,21 +35,27 @@ Once you collect 200💰 you can trade them 🔄 for views, likes, comments or f
 170💰 = 2 comments;
 
 200💰 = 1 follower.'
-accountNotFound_message: 'Account <a href="${url}">${username}</a> not found'
+accountNotAdded_message: 'Account <a href="${url}">${username}</a> not added. Reason: ${reason}'
 
 chooseType_message: 'Select task type:'
 enterUrl_message: 'Send the link to your shot:'
 enterCount_message: 'Your balance: ${balance} 💰
 
+
 Enter the number of <b>${actions}</b> you want to get (1 ${action} = ${price} 💰):'
 taskIsAdded_message: 'You task is added to a queue ✅ You will get notified once the execution is done 👍'
 
 dataIsntCorrect_message: 'You entered incorrect data'
-notEnoughFound_message: 'There are not enough funds on your balance'
+notEnoughFound_message: 'You have insufficient 💰 to get ${amount} ${actions}.
+
+You can try ${available} instead.'
 
 balanceReplenished_message: 'You top up balance <a href="tg://user?id=${id}">${username}</a> on ${credits} (all: ${balance} 💰)'
 
-tasksOver_message: 'No tasks available for now. Please check again later'
+taskChecking_message: 'Thanks for performing the task. You will get 💰once we verify it.
+
+You can check your balance by pressing <b>Balance💰</b>'
+tasksOver_message: 'There are no any other active tasks for now, please check later'
 
 like_task: 'Follow the link ${url} and <b>like</b>.
 
@@ -105,8 +111,6 @@ txAccepted_message: 'Your transaction has been accepted, please wait for your re
 txAlreadyUse_message: 'This transaction has already been used by another user'
 txIsntCorrect_message: 'You entered an incorrect transaction hash'
 
-taskChecking_message: 'Bot checks the completion of the task and transfers 💰 to you'
-
 paymentIsSuccessful_message: 'Your account has been replenished with <b>${balance}</b> 💰'
 paymentIsFailed_message: 'The account could not be replenished or the payment has not yet been processed'
 paymentNotFound_message: 'Payment not found, contact administration'
@@ -133,9 +137,9 @@ balance_button: 'Balance💰'
 add_button: 'Add Task⚡️'
 tasks_button: 'Available Tasks⏱️'
 
-like_button: 'Like'
-comment_button: 'Comment'
-following_button: 'Follow'
+like_button: 'Like ${price} 💰'
+comment_button: 'Comment ${price} 💰'
+following_button: 'Follow ${price} 💰'
 
 topUpBalance_button: 'Top Up 🤑'
 ETH_button: 'ETH'

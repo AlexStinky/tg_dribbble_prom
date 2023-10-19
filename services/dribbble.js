@@ -12,6 +12,8 @@ const { jobService, userService, taskService } = require('./db');
 
 const { Queue } = require('../modules/queue');
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const FOLLOWING_REG = /(\/teams\/|\/)/g;
 
 class Dribbble extends Queue {
@@ -29,6 +31,8 @@ class Dribbble extends Queue {
         this.LIKES = '/likes';
         this.SHOTS = 'shots/';
         this.COMMENTS = '/comments?page=1&sort=recent&format=json';
+
+        this.DELAY = 900000;
     }
 
     /*async createBrowser() {
@@ -65,6 +69,10 @@ class Dribbble extends Queue {
             await this.job(data);
 
             this.dequeue();
+
+            if (i % 30 === 0) {
+                await sleep(this.DELAY);
+            }
         }
 
         setTimeout(() => this.run(), 1000);
@@ -147,55 +155,74 @@ class Dribbble extends Queue {
     }
 
     async getUser(username) {
-        const { data } = await this.parser({
-            method: 'get',
-            url: this.URL + username,
-        });
+        try {
+            const { data } = await this.parser({
+                method: 'get',
+                url: this.URL + username,
+            });
+            const { document } = new JSDOM(data).window;
+            const avatar = (document.body.querySelector('img.profile-avatar')).getAttribute('src');
 
-        if (data) {
-            return {
-                success: true,
-                response: data
-            };
-        } else {
+            if (avatar) {
+                const isDefault = avatar.includes('avatar-default');
+
+                if (!isDefault) {
+                    const shots = Array.from(document.body.querySelectorAll('.shot-thumbnail'));
+
+                    if (shots.length >= 3) {
+                        return {
+                            success: true,
+                            response: data
+                        };
+                    } else {
+                        throw 'Not enough shots (min 3)'
+                    }
+                } else {
+                    throw 'Profile avatar is default';
+                }
+            } else {
+                throw 'Account not found';
+            }
+        } catch (e) {
+            console.log(e);
+
             return {
                 success: false,
                 isError: true,
-                response: data
+                response: e
             }
         }
     }
 
     async getShot(id) {
-        const { data } = await this.parser({
-            method: 'get',
-            url: this.URL + this.SHOTS + id,
-        });
+        try {
+            const { data } = await this.parser({
+                method: 'get',
+                url: this.URL + this.SHOTS + id,
+            });
 
-        if (data) {
             return {
                 success: true,
                 response: data
             };
-        } else {
+        } catch (e) {
             return {
                 success: false,
                 isError: true,
-                response: data
+                response: e
             }
         }
     }
 
     async checkFollowing(where, whom) {
-        const { data } = await this.parser({
-            method: 'get',
-            url: this.URL + where + this.FOLLOWING,
-            headers: {
-                'Cookie': this.cookies
-            }
-        });
-
-        if (data) {
+        try {
+            const { data } = await this.parser({
+                method: 'get',
+                url: this.URL + where + this.FOLLOWING,
+                headers: {
+                    'Cookie': this.cookies
+                }
+            });
             const { document } = new JSDOM(data).window;
             const list = Array.from(document.body.querySelectorAll('div.results-pane > ol > li'));
             const check = list.find((el) => {
@@ -214,25 +241,25 @@ class Dribbble extends Queue {
                 success: (check) ? true : false,
                 response: (check) ? (check.getAttribute('href')).replace(FOLLOWING_REG, '') : check
             };
-        } else {
+        } catch (e) {
             return {
                 success: false,
                 isError: true,
-                response: data
+                response: e
             };
         }
     }
 
     async checkLike(username, id) {
-        const { data } = await this.parser({
-            method: 'get',
-            url: this.URL + username + this.LIKES,
-            headers: {
-                'Cookie': this.cookies
-            }
-        });
+        try {
+            const { data } = await this.parser({
+                method: 'get',
+                url: this.URL + username + this.LIKES,
+                headers: {
+                    'Cookie': this.cookies
+                }
+            });
 
-        if (data) {
             const { document } = new JSDOM(data).window;
             const list = Array.from(document.body.querySelectorAll('div.likes-page-shots > ol > li'));
             const check = list.find((el) => {
@@ -247,41 +274,45 @@ class Dribbble extends Queue {
                 success: (check) ? true : false,
                 response: (check) ? check.getAttribute('data-thumbnail-id') : check
             };
-        } else {
+        } catch (e) {
             return {
                 success: false,
                 isError: true,
-                response: data
+                response: e
             };
         }
     }
 
     async checkComment(username, id) {
-        const { data } = await this.parser({
-            method: 'get',
-            url: this.URL + this.SHOTS + id + this.COMMENTS,
-            headers: {
-                'Cookie': this.cookies
-            }
-        });
-
-        if (data && data.comments) {
-            const { comments } = data;
-            const check = comments.find((el) => {
-                if (el.user.username == username) {
-                    return el;
+        try {
+            const { data } = await this.parser({
+                method: 'get',
+                url: this.URL + this.SHOTS + id + this.COMMENTS,
+                headers: {
+                    'Cookie': this.cookies
                 }
             });
+
+            let check = null;
+
+            if (data && data.comments) {
+                const { comments } = data;
+                check = comments.find((el) => {
+                    if (el.user.username == username) {
+                        return el;
+                    }
+                });
+            }
 
             return {
                 success: (check) ? true : false,
                 response: (check) ? check : data
             };
-        } else {
+        } catch (e) {
             return {
                 success: false,
                 isError: true,
-                response: data
+                response: e
             };
         }
     }

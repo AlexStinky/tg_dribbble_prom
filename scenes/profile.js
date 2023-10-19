@@ -42,9 +42,10 @@ function addUsername() {
                 ctx.i18n.t('accountAdded_message', {
                     url
                 }) :
-                ctx.i18n.t('accountNotFound_message', {
+                ctx.i18n.t('accountNotAdded_message', {
                     url,
-                    username
+                    username,
+                    reason: check.response
                 }),
             extra: (check.success) ?
                 (messages.menu(ctx.state.user.locale)).extra : {}
@@ -73,6 +74,7 @@ function addNewTask() {
     task.enter(async (ctx) => {
         const now = new Date();
 
+        ctx.scene.state.CONFIG = JSON.parse(fs.readFileSync('./config.json'));
         ctx.scene.state.data = {
             tg_id: ctx.from.id,
             dribbble_username: ctx.state.user.dribbble_username,
@@ -85,12 +87,16 @@ function addNewTask() {
             price: 0
         };
 
+        const like_price = ctx.scene.state.CONFIG['LIKE_PRICE'];
+        const comment_price = ctx.scene.state.CONFIG['COMMENT_PRICE'];
+        const following_price = ctx.scene.state.CONFIG['FOLLOWING_PRICE'];
+
         await ctx.replyWithHTML(ctx.i18n.t('chooseType_message'), {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: ctx.i18n.t('like_button'), callback_data: 'type-like' }],
-                    [{ text: ctx.i18n.t('comment_button'), callback_data: 'type-comment' }],
-                    [{ text: ctx.i18n.t('following_button'), callback_data: 'type-following' }],
+                    [{ text: ctx.i18n.t('like_button', { price: like_price }), callback_data: 'type-like' }],
+                    [{ text: ctx.i18n.t('comment_button', { price: comment_price }), callback_data: 'type-comment' }],
+                    [{ text: ctx.i18n.t('following_button', { price: following_price }), callback_data: 'type-following' }],
                     [{ text: ctx.i18n.t('cancel_button'), callback_data: 'cancel' }]
                 ]
             }
@@ -120,6 +126,11 @@ function addNewTask() {
 
     task.on('text', async (ctx) => {
         if (ctx.scene.state.data.type) {
+            const ACTIONS = {
+                'like': [ctx.i18n.t('like_action'), ctx.i18n.t('likes_action'), 'LIKE_PRICE'],
+                'comment': [ctx.i18n.t('comment_action'), ctx.i18n.t('comments_action'), 'COMMENT_PRICE'],
+                'following': [ctx.i18n.t('follower_action'), ctx.i18n.t('followers_action'), 'FOLLOWING_PRICE']
+            };
             const { data } = ctx.scene.state;
             const text = ctx.message.text;
             const message = {
@@ -155,32 +166,35 @@ function addNewTask() {
                 }
 
                 if (check.success) {
-                    const CONFIG = JSON.parse(fs.readFileSync('./config.json'));
-                    const ACTIONS = {
-                        'like': [ctx.i18n.t('like_action'), ctx.i18n.t('likes_action'), 'LIKE_PRICE'],
-                        'comment': [ctx.i18n.t('comment_action'), ctx.i18n.t('comments_action'), 'COMMENT_PRICE'],
-                        'following': [ctx.i18n.t('follower_action'), ctx.i18n.t('followers_action'), 'FOLLOWING_PRICE']
-                    };
+                    const { CONFIG } = ctx.scene.state;
                     const price = CONFIG[ACTIONS[data.type][2]];
 
                     message.text = ctx.i18n.t('enterCount_message', {
                         action: ACTIONS[data.type][0],
                         actions: ACTIONS[data.type][1],
                         price,
-                        balance: ctx.state.user.balance
+                        balance: ctx.state.user.balance,
                     });
 
                     ctx.scene.state.data.data = temp;
                     ctx.scene.state.data.price = price;
                 }
             } else if (Number(text)) {
-                if (ctx.state.user.balance >= text) {
+                const amount = ctx.scene.state.data.price * text;
+
+                if (ctx.state.user.balance >= amount) {
                     message.text = ctx.i18n.t('taskIsAdded_message');
                     message.extra = {};
 
                     ctx.scene.state.data.all = Number(text);
                 } else {
-                    message.text = ctx.i18n.t('notEnoughFound_message');
+                    const actions = ACTIONS[ctx.scene.state.data.type][1];
+
+                    message.text = ctx.i18n.t('notEnoughFound_message', {
+                        amount,
+                        actions,
+                        available: parseInt(ctx.state.user.balance / ctx.scene.state.data.price),
+                    });
                 }
             }
 
