@@ -156,7 +156,7 @@ class Dribbble extends Queue {
         };
     }
 
-    async getUser(username) {
+    async getUser(username, isTask = false) {
         try {
             const { data } = await this.parser({
                 method: 'get',
@@ -168,10 +168,10 @@ class Dribbble extends Queue {
             if (avatar) {
                 const isDefault = avatar.includes('avatar-default');
 
-                if (!isDefault) {
+                if (!isDefault || isTask) {
                     const shots = Array.from(document.body.querySelectorAll('.shot-thumbnail'));
 
-                    if (shots.length >= 3) {
+                    if (shots.length >= 3 || isTask) {
                         return {
                             success: true,
                             response: data
@@ -225,21 +225,24 @@ class Dribbble extends Queue {
             });
             const { document } = new JSDOM(data).window;
             const list = Array.from(document.body.querySelectorAll('div.results-pane > ol > li'));
-            const check = list.find((el) => {
-                const temp = el.querySelector('.designer-link');
+
+            let check = null;
+
+            for (let i = 0; i < list.length; i++) {
+                const temp = list[i].querySelector('.designer-link');
 
                 if (temp) {
-                    const username = (temp.getAttribute('href')).replace(FOLLOWING_REG, '');
+                    check = (temp.getAttribute('href')).replace(FOLLOWING_REG, '');
 
-                    if (username == whom) {
-                        return temp;
+                    if (check == whom) {
+                        break;
                     }
                 }
-            });
+            }
 
             return {
                 success: (check) ? true : false,
-                response: (check) ? (check.getAttribute('href')).replace(FOLLOWING_REG, '') : check
+                response: check
             };
         } catch (e) {
             return {

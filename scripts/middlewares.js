@@ -107,7 +107,7 @@ const commands = async (ctx, next) => {
             } else {
                 isScene = true;
 
-                await ctx.replyWithHTML(ctx.i18n.t('notEnoughFound_message'));
+                await ctx.replyWithHTML(ctx.i18n.t('notEnoughFounds_message', { balance: ctx.state.user.balance }));
             }
         }
 

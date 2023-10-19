@@ -162,7 +162,7 @@ function addNewTask() {
                 } else {
                     temp = text.replace(DRIBBBLE_URL_REG, '');
 
-                    check = await dribbbleService.getUser(temp);
+                    check = await dribbbleService.getUser(temp, true);
                 }
 
                 if (check.success) {
@@ -186,11 +186,11 @@ function addNewTask() {
                     message.text = ctx.i18n.t('taskIsAdded_message');
                     message.extra = {};
 
-                    ctx.scene.state.data.all = Number(text);
+                    ctx.scene.state.data.all = amount;
                 } else {
                     const actions = ACTIONS[ctx.scene.state.data.type][1];
 
-                    message.text = ctx.i18n.t('notEnoughFound_message', {
+                    message.text = ctx.i18n.t('notEnoughFounds2_message', {
                         amount,
                         actions,
                         available: parseInt(ctx.state.user.balance / ctx.scene.state.data.price),

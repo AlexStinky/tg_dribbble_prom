@@ -38,7 +38,7 @@ Once you collect 200💰 you can trade them 🔄 for views, likes, comments or f
 accountNotAdded_message: 'Account <a href="${url}">${username}</a> not added. Reason: ${reason}'
 
 chooseType_message: 'Select task type:'
-enterUrl_message: 'Send the link to your shot:'
+enterUrl_message: 'Send the link to your shot/account:'
 enterCount_message: 'Your balance: ${balance} 💰
 
 
@@ -46,7 +46,10 @@ Enter the number of <b>${actions}</b> you want to get (1 ${action} = ${price} �
 taskIsAdded_message: 'You task is added to a queue ✅ You will get notified once the execution is done 👍'
 
 dataIsntCorrect_message: 'You entered incorrect data'
-notEnoughFound_message: 'You have insufficient 💰 to get ${amount} ${actions}.
+notEnoughFounds_message: 'You need at least 200💰to add a new task.
+
+Your balance - ${balance}, try to complete tasks and earn extra 💰'
+notEnoughFounds2_message: 'You have insufficient 💰 to get ${amount} ${actions}.
 
 You can try ${available} instead.'
 
