@@ -23,6 +23,8 @@ const USDT_TX_REG = /([0-9A-Fa-f]{64})/;
 function addUsername() {
     const username = new Scene('username');
 
+    username.use(middlewares.commands);
+
     username.enter(async (ctx) => {
         await ctx.replyWithHTML(ctx.i18n.t('enterDribbbleUsername_message'));
     });
