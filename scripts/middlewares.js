@@ -77,6 +77,8 @@ const commands = async (ctx, next) => {
     if (message && message.chat.type === 'private' && message.text) {
         const _ = message.text;
 
+        await ctx.scene.leave();
+
         if (_ === '/change') {
             return await ctx.scene.enter('username');
         }
