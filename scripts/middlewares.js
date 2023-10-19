@@ -78,7 +78,7 @@ const commands = async (ctx, next) => {
         const _ = message.text;
 
         if (_ === '/change') {
-            return await ctx.scene.enter('username');
+            return await ctx.scene.enter('username', { user: ctx.state.user });
         }
 
         if (_ === '/balance' || _ === ctx.i18n.t('balance_button')) {
