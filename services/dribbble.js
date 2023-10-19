@@ -133,6 +133,8 @@ class Dribbble extends Queue {
                 };
             }
         } else if (res.isError) {
+            console.log(res.response);
+
             sender.enqueue({
                 chat_id: this.CONFIG.LOGS_ID,
                 message: {
@@ -184,8 +186,6 @@ class Dribbble extends Queue {
                 throw 'Account not found';
             }
         } catch (e) {
-            console.log(e);
-
             return {
                 success: false,
                 isError: true,
