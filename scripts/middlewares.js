@@ -77,7 +77,7 @@ const commands = async (ctx, next) => {
     if (message && message.chat.type === 'private' && message.text) {
         const _ = message.text;
 
-        await ctx.scene.leave();
+        let isScene = false;
 
         if (_ === '/change') {
             return await ctx.scene.enter('username');
@@ -105,6 +105,8 @@ const commands = async (ctx, next) => {
             if (ctx.state.user.balance >= 200) {
                 return await ctx.scene.enter('task');
             } else {
+                isScene = true;
+
                 await ctx.replyWithHTML(ctx.i18n.t('notEnoughFound_message'));
             }
         }
@@ -128,7 +130,13 @@ const commands = async (ctx, next) => {
         if (_ === '/menu' || _ === '/start') {
             const menu_message = messages.menu(ctx.state.user.locale);
 
+            isScene = true;
+
             await ctx.replyWithHTML(menu_message.text, menu_message.extra);
+        }
+
+        if (isScene) {
+            return await ctx.scene.leave();
         }
     }
 
