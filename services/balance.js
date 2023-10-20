@@ -182,6 +182,7 @@ class Balance extends Queue {
     }
 
     async checkPayment(data) {
+        console.log(data)
         const res = (data.callback) ?
             {
                 success: (data.status === 'Approved') ? true : false,
@@ -254,10 +255,10 @@ class Balance extends Queue {
 
     async checkUSDT(_) {
         try {
-            console.log(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS)
             const {
                 _id
             } = _;
+            console.log(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS)
             const { data } = await this.parser.post(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS);
 
             console.log(data)
