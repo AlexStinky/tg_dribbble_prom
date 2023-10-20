@@ -264,6 +264,19 @@ bot.hears(/upbalance ([A-Za-z0-9]+) ([0-9]+)/, async (ctx) => {
     }
 });
 
+bot.hears(/checkPayment ([a-z0-9]+)/, async (ctx) => {
+    if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
+        const _id = ctx.match[1];
+        const payment = await paymentService.get({ _id });
+
+        if (payment) {
+            const check = await balanceService.checkUSDT(payment);
+
+            console.log(check);
+        }
+    }
+});
+
 bot.action('cancel', async (ctx) => {
     await ctx.deleteMessage();
     await ctx.scene.leave();
