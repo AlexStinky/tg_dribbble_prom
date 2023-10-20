@@ -31,8 +31,12 @@ app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
         const data = req.body;
 
+        console.log(req.body)
+
         if (data.status) {
             const payment = await paymentService.get({ _id: data.payment_system_order_id });
+
+            console.log(payment)
 
             if (payment) {
                 payment.callback = {
@@ -46,6 +50,8 @@ app.post(['/payments', '/payments/callback'], async (req, res) => {
             } else {
                 console.log(`Payment not found:`, data);
             }
+        } else {
+            console.log(`Status not found:`, data);
         }
 
         res.send('OK').status(200);

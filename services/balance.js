@@ -187,10 +187,10 @@ class Balance extends Queue {
                 success: (data.status === 'Approved') ? true : false,
                 response: data.callback
             } : (data.method === 'ETH') ?
-            await this.checkETH(data) : await this.checkUSDT(data);
+                await this.checkETH(data) : await this.checkUSDT(data);
         const message = {
             type: 'text',
-            text: i18n.t('ru', 'paymentIsFailed_message'),
+            text: i18n.t('en', 'paymentIsFailed_message'),
             extra: {}
         };
 
@@ -254,6 +254,7 @@ class Balance extends Queue {
 
     async checkUSDT(_) {
         try {
+            console.log(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS)
             const {
                 _id
             } = _;
