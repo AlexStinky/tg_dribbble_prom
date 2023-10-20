@@ -139,7 +139,8 @@ class Dribbble extends Queue {
                 chat_id: this.CONFIG.LOGS_ID,
                 message: {
                     type: 'text',
-                    text: (res.response) ? JSON.stringify(res.response) : 'Error',
+                    text: res.error + ' ' + (res.response) ?
+                        JSON.stringify(res.response) : 'error',
                     extra: {}
                 }
             });
@@ -186,9 +187,12 @@ class Dribbble extends Queue {
                 throw 'Account not found';
             }
         } catch (e) {
+            console.log(e);
+
             return {
                 success: false,
                 isError: true,
+                error: 'User:',
                 response: e
             }
         }
@@ -206,9 +210,12 @@ class Dribbble extends Queue {
                 response: data
             };
         } catch (e) {
+            console.log(e);
+
             return {
                 success: false,
                 isError: true,
+                error: 'Shot:',
                 response: e
             }
         }
@@ -245,9 +252,12 @@ class Dribbble extends Queue {
                 response: check
             };
         } catch (e) {
+            console.log(e);
+
             return {
                 success: false,
                 isError: true,
+                error: 'Following:',
                 response: e
             };
         }
@@ -278,9 +288,12 @@ class Dribbble extends Queue {
                 response: (check) ? check.getAttribute('data-thumbnail-id') : check
             };
         } catch (e) {
+            console.log(e);
+
             return {
                 success: false,
                 isError: true,
+                error: 'Like:',
                 response: e
             };
         }
@@ -312,9 +325,12 @@ class Dribbble extends Queue {
                 response: (check) ? check : data
             };
         } catch (e) {
+            console.log(e);
+
             return {
                 success: false,
                 isError: true,
+                error: 'Comment:',
                 response: e
             };
         }
