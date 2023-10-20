@@ -182,10 +182,9 @@ class Balance extends Queue {
     }
 
     async checkPayment(data) {
-        console.log(data)
         const res = (data.callback) ?
             {
-                success: (data.status === 'Approved') ? true : false,
+                success: (data.callback.status === 'Approved') ? true : false,
                 response: data.callback
             } : (data.method === 'ETH') ?
                 await this.checkETH(data) : await this.checkUSDT(data);
@@ -198,12 +197,12 @@ class Balance extends Queue {
         if (data.callback) {
             if (data.callback.usd_money <= data.callback.money ||
                 data.status !== 'Approved') {
-                message.text = i18n.t('ru', 'paymentWhatsaPayIsFailed_message');
+                message.text = i18n.t('en', 'paymentWhatsaPayIsFailed_message');
             }
         }
 
         if (res.success) {
-            message.text = i18n.t('ru', 'paymentIsSuccessful_message', {
+            message.text = i18n.t('en', 'paymentIsSuccessful_message', {
                 balance: data.amount
             });
 
@@ -258,10 +257,7 @@ class Balance extends Queue {
             const {
                 _id
             } = _;
-            console.log(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS)
             const { data } = await this.parser.post(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS);
-
-            console.log(data)
 
             return {
                 success: (data) ? true : false,
