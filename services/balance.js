@@ -172,7 +172,7 @@ class Balance extends Queue {
         } catch (e) {
             const res = (e.response) ? e.response.data : e;
 
-            console.log(res);
+            console.log('[getInvoiceUrl]', res);
 
             return {
                 success: false,
@@ -266,7 +266,7 @@ class Balance extends Queue {
         } catch (e) {
             const res = (e.response) ? e.response.data : e;
 
-            console.log(res);
+            console.log('[checkUSDT]', res);
 
             return {
                 success: false,
@@ -284,7 +284,7 @@ class Balance extends Queue {
                 data: res
             };
         } catch (e) {
-            console.log(e);
+            console.log('[getTransaction]', e);
 
             return {
                 success: false,
