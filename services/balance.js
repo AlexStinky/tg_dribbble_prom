@@ -183,10 +183,7 @@ class Balance extends Queue {
 
     async checkPayment(data) {
         const res = (data.callback) ?
-            {
-                success: (data.callback.status === 'Approved') ? true : false,
-                response: data.callback
-            } : (data.method === 'ETH') ?
+            { success: true } : (data.method === 'ETH') ?
                 await this.checkETH(data) : await this.checkUSDT(data);
         const message = {
             type: 'text',
@@ -194,12 +191,12 @@ class Balance extends Queue {
             extra: {}
         };
 
-        if (data.callback) {
+        /*if (data.callback) {
             if (data.callback.usd_money <= data.callback.money ||
                 data.status !== 'Approved') {
                 message.text = i18n.t('en', 'paymentWhatsaPayIsFailed_message');
             }
-        }
+        }*/
 
         if (res.success) {
             message.text = i18n.t('en', 'paymentIsSuccessful_message', {
@@ -216,10 +213,6 @@ class Balance extends Queue {
         await paymentService.update({ _id: data._id }, {
             isSuccessful: (res.success) ? true : false,
             isChecked: true,
-            status: (data.callback) ?
-                data.callback.status : (res.success) ?
-                'Approved' : 'Failed',
-            callback: (data.callback) ? data.callback : null
         });
 
         sender.enqueue({
@@ -257,7 +250,9 @@ class Balance extends Queue {
             const {
                 _id
             } = _;
-            const { data } = await this.parser.post(this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS);
+            const { data } = await this.parser.post(
+                this.WHATSAPAY_URL + this.WHATSAPAY_CALLBACK + _id, {}, this.WHATSAPAY_OPTIONS
+            );
 
             return {
                 success: (data) ? true : false,

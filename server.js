@@ -31,27 +31,22 @@ app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
         const data = req.body;
 
-        console.log('[Callback]', req.body)
+        console.log('[Callback]', data);
 
-        if (data.status) {
+        if (data.payment_system_order_id) {
             const payment = await paymentService.get({ _id: data.payment_system_order_id });
 
-            console.log('[Callback]', payment)
+            console.log('[Callback]', payment);
 
             if (payment) {
-                payment.callback = {
-                    status: data.status,
-                    money: data.money,
-                    usd_money: data.usd_money,
-                    created_at: data.created_at
-                };
+                payment.callback = true;
 
                 balanceService.enqueue(payment);
             } else {
                 console.log(`[Callback] Payment not found:`, data);
             }
         } else {
-            console.log(`[Callback] Status not found:`, data);
+            console.log(`[Callback] Payment system order id not found:`, data);
         }
 
         res.send('OK').status(200);
