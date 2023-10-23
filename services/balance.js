@@ -12,7 +12,7 @@ const { Queue } = require('../modules/queue');
 
 const i18n = new TelegrafI18n({
     directory: './locales',
-    defaultLanguage: 'ru',
+    defaultLanguage: 'en',
     sessionName: 'session',
     useSession: true,
     templateData: {
@@ -128,24 +128,24 @@ class Balance extends Queue {
             extra: {
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: i18n.t('ru', 'topUpBalance_button'), callback_data: 'topUpBalance' }]
+                        [{ text: i18n.t('en', 'topUpBalance_button'), callback_data: 'topUpBalance' }]
                     ]
                 }
             }
         };
 
         message.text = (res.success) ?
-            i18n.t('ru', 'invoiceUrlSuccessUSDT_message', {
+            i18n.t('en', 'invoiceUrlSuccessUSDT_message', {
                 order: data.order,
                 price: data.value
-            }) : i18n.t('ru', 'invoiceUrlFailedUSDT_message');
+            }) : i18n.t('en', 'invoiceUrlFailedUSDT_message');
 
         if (res.success) {
             message.extra = {
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: i18n.t('ru', 'pay_button'), url: res.response }],
-                        [{ text: i18n.t('ru', 'check_button'), callback_data: `cp-${data._id}` }]
+                        [{ text: i18n.t('en', 'pay_button'), url: res.response }],
+                        [{ text: i18n.t('en', 'check_button'), callback_data: `cp-${data._id}` }]
                     ]
                 }
             };

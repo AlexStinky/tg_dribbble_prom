@@ -41,7 +41,7 @@ const { telegram: tg } = bot;
 
 const i18n = new TelegrafI18n({
     directory: './locales',
-    defaultLanguage: 'ru',
+    defaultLanguage: 'en',
     sessionName: 'session',
     useSession: true,
     templateData: {

@@ -92,30 +92,28 @@ enterHash_message: 'Send <b>${price} ${method}</b> on this address:
 
 Then send the transaction hash:'
 
-invoiceUrlSuccessUSDT_message: 'Successful!
+invoiceUrlSuccessUSDT_message: 'Invoice created!
 
 You want to buy: ${order}
 
-Price: ${price} USDT
+Total: ${price} USDT
 
 
-How to pay in USDT:
+How to pay USDT:
 
-1️⃣ It is important to copy and transfer exactly the amount indicated on the payment page, with all numbers after the decimal point - necessary for automatic payment processing!
+1️⃣ It is important to copy and paste the exact amount that is on payment page with all decimal points - it is required for automatic transaction processing.
 
-2️⃣ If you do not have a crypto wallet, you can choose a profitable exchange method from your card / account here:
-bestchange.ru
-Exchange ONLY for USDT on the network selected on the payment page. If you have chosen the Solana network, it does not mean that only SOL can be translated in it 😄
+2️⃣ If you don’t have a crypto wallet then you can create one on binance.com
 
-3️⃣ The speed of the transaction depends on the network and its load. It usually takes up to 5 minutes, after which you can check your balance.'
+3️⃣ Transaction processing speed depends on the network and it’s load. Usually, it takes no more than 5 minutes, after that you can check your balance'
 invoiceUrlFailedUSDT_message: 'Failed to create account, please try later'
 
-txAccepted_message: 'Your transaction has been accepted, please wait for your replenishment'
+txAccepted_message: 'Your transaction has been accepted, please wait for your toped up'
 txAlreadyUse_message: 'This transaction has already been used by another user'
 txIsntCorrect_message: 'You entered an incorrect transaction hash'
 
-paymentIsSuccessful_message: 'Your account has been replenished with <b>${balance}</b> 💰'
-paymentIsFailed_message: 'The account could not be replenished or the payment has not yet been processed'
+paymentIsSuccessful_message: 'Your account has been toped up by <b>${balance}</b> 💰'
+paymentIsFailed_message: 'The account could not be toped up or the payment has not yet been processed'
 paymentNotFound_message: 'Payment not found, contact administration'
 paymentWhatsaPayIsFailed_message: 'You havent deposited enough funds'
 
