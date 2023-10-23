@@ -29,18 +29,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
-        const data = res.body;
+        const {
+            payment_system_order_id
+        } = req.query;
 
-        console.log('[Callback]', data);
+        console.log('[Callback]', payment_system_order_id);
 
-        if (data.payment_system_order_id) {
-            const payment = await paymentService.get({ _id: data.payment_system_order_id });
+        if (payment_system_order_id) {
+            const payment = await paymentService.update({ _id: payment_system_order_id }, {
+                callback: true
+            }, 'after');
 
             console.log('[Callback]', payment);
 
             if (payment) {
-                payment.callback = true;
-
                 balanceService.enqueue(payment);
             } else {
                 console.log(`[Callback] Payment not found:`, data);
