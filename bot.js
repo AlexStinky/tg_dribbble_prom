@@ -98,11 +98,14 @@ bot.command('db', async (ctx) => {
 
 bot.command('test', async (ctx) => {
     if (ctx.from.id == stnk || ctx.state.user.isAdmin) {
-        const res = await balanceService.check({
+        /*const res = await balanceService.check({
             hash: '6cce7799066c22b4b40792f3edd2d9ca72ef4a873912d72f059cb87aa7e8d8dc',
             to: 'TPcsmsWYnw11xa3kQXgoSwPUkFS3iUWZwe',
             value: '297.737585'
         });
+
+        console.log(res)*/
+        const res = await paymentService.create({ callback: true });
 
         console.log(res)
     }

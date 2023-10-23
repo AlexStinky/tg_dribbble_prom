@@ -30,13 +30,13 @@ app.use(express.urlencoded({ extended: true }));
 app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
         const {
-            payment_system_order_id
+            order_id
         } = req.query;
 
-        console.log('[Callback]', payment_system_order_id);
+        console.log('[Callback]', order_id);
 
-        if (payment_system_order_id) {
-            const payment = await paymentService.update({ _id: payment_system_order_id }, {
+        if (order_id) {
+            const payment = await paymentService.update({ _id: order_id }, {
                 callback: true
             }, 'after');
 
@@ -48,12 +48,14 @@ app.post(['/payments', '/payments/callback'], async (req, res) => {
                 console.log(`[Callback] Payment not found:`, data);
             }
         } else {
-            console.log(`[Callback] Payment system order id not found:`, data);
+            console.log(`[Callback] Payment order id not found:`, data);
         }
 
         res.send('OK').status(200);
     } catch (e) {
-        res.status(500);
+        console.log('[Callback]', e);
+
+        res.send('Error').status(500);
     }
 });
 
