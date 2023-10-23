@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post(['/payments', '/payments/callback'], async (req, res) => {
     try {
-        const data = req.body;
+        const data = res.body;
 
         console.log('[Callback]', data);
 
