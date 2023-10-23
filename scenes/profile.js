@@ -15,7 +15,7 @@ const { balanceService } = require('../services/balance');
 
 const DRIBBBLE_URL = process.env.DRIBBBLE_URL;
 
-const DRIBBBLE_URL_REG = /((https|http)(:\/\/dribbble.com\/)|(\/))/g;
+const DRIBBBLE_URL_REG = /((https|http)(:\/\/dribbble.com\/)|(dribbble.com\/)|(\/))/g;
 const TX_HASH_REG = /(0x[0-9a-fA-F]{64})|([0-9A-Fa-f]{64})/;
 const ETH_TX_REG = /(0x[0-9a-fA-F]{64})/;
 const USDT_TX_REG = /([0-9A-Fa-f]{64})/;
